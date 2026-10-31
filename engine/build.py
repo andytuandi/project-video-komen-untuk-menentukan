@@ -203,9 +203,17 @@ def main():
     out_dir = Path(a.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     final = out_dir / f"{ep['_slug']}.mp4"
+    # two-pass loudnorm so the final file really lands on -14 LUFS
+    probe = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(mix), "-af",
+                            "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                           capture_output=True, text=True).stderr
+    m = json.loads(probe[probe.rindex("{"):probe.rindex("}") + 1])
+    ln = ("loudnorm=I=-14:TP=-1.5:LRA=11:linear=true:"
+          f"measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
+          f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}")
     run(["ffmpeg", "-y", "-loglevel", "error", "-i", silent, "-ss", a.start, "-i", mix,
          "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-         "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+         "-af", ln, "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
          "-shortest", "-movflags", "+faststart", final])
     if tl.get("cover"):
         run(["node", render_js, "--timeline", tl_path, "--cover", out_dir / f"{ep['_slug']}-cover.jpg"])

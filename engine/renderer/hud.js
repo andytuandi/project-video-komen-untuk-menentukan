@@ -107,7 +107,8 @@ function captions(g, tl, t) {
   if (!c) return;
   const k = clamp((t - c.start) / 0.12);
   const s = 0.85 + 0.15 * easeOutBack(k);
-  g.save(); g.translate(W / 2, 1230); g.scale(s, s);
+  const y = tl.endCard && t >= tl.endCard.t ? 1290 : 1230;  // clear the end card's follow button
+  g.save(); g.translate(W / 2, y); g.scale(s, s);
   g.font = "900 66px Nunito";
   const lines = wrap(g, c.text, 900);
   lines.forEach((l, i) => outlined(g, l, 0, (i - (lines.length - 1) / 2) * 80, { font: "900 66px Nunito", stroke: 13, color: c.color || "#fff" }));
