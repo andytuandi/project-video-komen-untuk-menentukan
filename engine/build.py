@@ -49,6 +49,25 @@ def to_min(s):
     return int(h) * 60 + int(m)
 
 
+VOICE_FX = {
+    # deeper, larger-sounding voice (pitch + formants down, duration unchanged) with a little throne-hall echo
+    "royal": ("asetrate=48000*0.88,aresample=48000,atempo=1.13636,"
+              "bass=g=5:f=120,equalizer=f=2800:t=q:w=1.2:g=2.5,"
+              "aecho=0.85:0.5:38|72:0.14|0.08,alimiter=limit=0.95"),
+}
+
+
+def apply_fx(wav, fx):
+    """Process a cached TTS wav with a named voice effect (cached next to it)."""
+    if not fx:
+        return wav
+    out = Path(str(wav).replace(".wav", f".{fx}.wav"))
+    if not out.exists():
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af", VOICE_FX[fx],
+                        "-ac", "1", "-ar", "48000", str(out)], check=True)
+    return out
+
+
 def build_timeline(ep, cache_dir):
     voices = ep["voices"]
     gap = ep.get("gap", 0.35)
@@ -63,7 +82,7 @@ def build_timeline(ep, cache_dir):
         words, dur = [], b.get("dur", 0.0)
         if b.get("say"):
             wav, dur, words = synth_line(b["say"], v["voice"], v.get("rate", "+0%"), v.get("pitch", "+0Hz"), cache_dir)
-            clips.append({"path": str(wav), "t": speech_start})
+            clips.append({"path": str(apply_fx(wav, v.get("fx"))), "t": speech_start})
             for w in words:
                 w["s"] = round(w["s"] + speech_start, 3)
                 w["e"] = round(w["e"] + speech_start, 3)
@@ -147,14 +166,14 @@ def build_timeline(ep, cache_dir):
             q["params"] = dict(p["params"], lit=beat_t(lit["beat"], lit.get("at", 0)))
         props.append(q)
 
-    pop_keys = [{"t": beat_t(k["beat"], k.get("at", 0)), "v": k["v"]} for k in ep.get("popKeys", [])]
+    pop_keys = [{"t": beat_t(k["beat"], k.get("at", 0)), "v": k["v"], "ramp": k.get("ramp")} for k in ep.get("popKeys", [])]
     tl = {
         "fps": ep.get("fps", 30), "W": 1080, "H": 1920, "duration": round(t, 3),
         "series": ep["series"], "day": ep["day"], "handle": ep["handle"], "ui": ep.get("ui", {}),
         "population": ep.get("population", 1), "popKeys": pop_keys, "seed": ep.get("seed", 7),
         "shots": shots, "beats": beats, "captions": captions, "clock": clock, "popups": popups,
         "fades": fades, "endCard": end_card, "props": props, "cover": ep.get("cover"),
-        "sfx": sfx, "musicSections": music,
+        "sfx": sfx, "musicSections": music, "plazas": ep.get("plazas", []), "reserved": ep.get("reserved", []),
     }
     return tl, clips
 

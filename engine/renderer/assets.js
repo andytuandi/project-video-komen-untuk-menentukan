@@ -302,6 +302,22 @@ export function person(o = {}) {
     head.add(crown); parts.crown = crown;
     head.add(rx(at(mesh(new THREE.ConeGeometry(0.1, 0.18, 5), "#2b1d14"), 0, -0.28, 0.27), Math.PI));
   }
+  if (o.hair === "bun") {
+    head.add(at(mesh(new THREE.SphereGeometry(0.4, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.2), o.hairColor || "#2b1d14"), 0, 0.02, -0.02));
+    head.add(at(mesh(new THREE.IcosahedronGeometry(0.15, 0), o.hairColor || "#2b1d14"), 0, 0.22, -0.32));
+  }
+  if (o.hair === "hijab") {
+    const hj = mesh(new THREE.SphereGeometry(0.43, 10, 8, Math.PI * 0.72, Math.PI * 1.56, 0, Math.PI * 0.78), o.hijab || "#3d6fb6", { side: THREE.DoubleSide });
+    head.add(at(hj, 0, 0.02, -0.02));
+    head.add(at(mesh(new THREE.ConeGeometry(0.5, 0.5, 8, 1, true), o.hijab || "#3d6fb6", { side: THREE.DoubleSide }), 0, -0.42, -0.02));
+  }
+  if (o.soldier) {
+    head.add(at(mesh(new THREE.SphereGeometry(0.42, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), "#9aa4ad", { metalness: 0.4, roughness: 0.5 }), 0, 0.06, 0));
+    head.add(at(mesh(new THREE.ConeGeometry(0.08, 0.25, 5), "#c0392b"), 0, 0.52, 0));
+    body.add(at(mesh(new THREE.BoxGeometry(0.4, 0.5, 0.05), "#c0392b"), 0, 0.85, 0.2));
+    const sp = spear(); sp.position.set(0, -0.45, 0.05); parts.armR.add(sp);
+    const sh = mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.05, 8), "#7a4f2a"); sh.rotation.z = Math.PI / 2; sh.position.set(0.08, -0.3, 0.05); parts.armL.add(sh);
+  }
   if (o.hat === "straw") head.add(at(mesh(new THREE.ConeGeometry(0.55, 0.3, 8), "#d9b56a"), 0, 0.38, 0));
   if (o.hat === "helmet") head.add(at(mesh(new THREE.SphereGeometry(0.4, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2), "#9aa4ad", { metalness: 0.4 }), 0, 0.08, 0));
   g.userData.parts = parts;
@@ -353,5 +369,93 @@ export function zzz() {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   const g = new THREE.Group();
   for (let i = 0; i < 3; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false })); s.scale.setScalar(0.3); g.add(s); }
+  return g;
+}
+
+// ---------------------------------------------------------------- Day 2: places of worship + guard post
+function box(w, h, d, c, x, y, z, s) { return step(at(mesh(new THREE.BoxGeometry(w, h, d), c), x, y, z), s); }
+
+export function mosque() {
+  const g = new THREE.Group();
+  const wall = "#f4efe2", trim = "#2e8b57", dome = "#3aa36b", gold = "#e9c46a";
+  g.add(box(6.4, 0.3, 6.4, "#d9cfb8", 0, 0.15, 0, 0.0));              // plinth
+  g.add(box(5.6, 3.2, 5.6, wall, 0, 1.9, 0, 0.12));                   // prayer hall
+  g.add(box(5.8, 0.25, 5.8, trim, 0, 3.6, 0, 0.3));                   // cornice
+  g.add(step(at(mesh(new THREE.CylinderGeometry(1.7, 1.8, 0.8, 10), wall), 0, 4.1, 0), 0.38));   // drum
+  const d = mesh(new THREE.SphereGeometry(1.85, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), dome);
+  g.add(step(at(d, 0, 4.45, 0), 0.5));
+  g.add(step(at(mesh(new THREE.ConeGeometry(0.12, 0.7, 6), gold, { metalness: 0.3, roughness: 0.5 }), 0, 6.55, 0), 0.62));
+  // arched door + windows on the front (+z)
+  g.add(box(1.3, 2.0, 0.08, "#2f5d50", 0, 1.3, 2.82, 0.2));
+  { const arch = mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.08, 10, 1, false, -Math.PI / 2, Math.PI), "#2f5d50");
+    arch.rotation.x = Math.PI / 2; g.add(step(at(arch, 0, 2.3, 2.82), 0.2)); }
+  [-1.8, 1.8].forEach(x => g.add(box(0.6, 1.0, 0.08, "#2f5d50", x, 2.2, 2.82, 0.25)));
+  // minaret
+  const mx = 3.9, mz = 2.2;
+  g.add(step(at(mesh(new THREE.CylinderGeometry(0.42, 0.5, 6.5, 8), wall), mx, 3.25, mz), 0.68));
+  g.add(step(at(mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.2, 8), trim), mx, 5.2, mz), 0.76));
+  g.add(step(at(mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.9, 8), wall), mx, 6.95, mz), 0.8));
+  g.add(step(at(mesh(new THREE.SphereGeometry(0.46, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2), dome), mx, 7.4, mz), 0.86));
+  g.add(step(at(mesh(new THREE.ConeGeometry(0.06, 0.45, 5), gold), mx, 8.05, mz), 0.9));
+  return g;
+}
+
+export function church() {
+  const g = new THREE.Group();
+  const wall = "#f7f3ea", roof = "#b5523b", wood = "#7a4f2a";
+  g.add(box(5.2, 0.3, 7.6, "#d9cfb8", 0, 0.15, -0.6, 0.0));
+  g.add(box(4.4, 3.0, 6.6, wall, 0, 1.8, -1.0, 0.12));
+  // gabled roof: two tilted slabs
+  [-1, 1].forEach(sd => {
+    const r = mesh(new THREE.BoxGeometry(3.0, 0.2, 7.0), roof); r.rotation.z = sd * -0.6;
+    g.add(step(at(r, sd * 1.2, 4.05, -1.0), 0.35));
+  });
+  const gable = new THREE.Shape(); gable.moveTo(-2.2, 0); gable.lineTo(2.2, 0); gable.lineTo(0, 1.5); gable.lineTo(-2.2, 0);
+  [2.3, -4.3].forEach((z, i) => { const m = mesh(new THREE.ShapeGeometry(gable), wall, { side: THREE.DoubleSide }); g.add(step(at(m, 0, 3.3, z), 0.33)); });
+  // bell tower on the front
+  g.add(box(1.8, 5.4, 1.8, wall, 0, 2.85, 3.0, 0.45));
+  g.add(box(1.0, 1.6, 0.08, wood, 0, 1.1, 3.92, 0.5));                // door
+  g.add(step(at(mesh(new THREE.CircleGeometry(0.42, 10), "#6fa8dc", { emissive: "#6fa8dc", emissiveIntensity: 0.25 }), 0, 3.2, 3.92), 0.55));
+  g.add(box(0.5, 0.7, 0.08, "#4a3a2a", 0, 4.8, 3.92, 0.6));             // belfry opening
+  const spire = mesh(new THREE.ConeGeometry(1.35, 2.4, 4), roof); spire.rotation.y = Math.PI / 4;
+  g.add(step(at(spire, 0, 6.75, 3.0), 0.72));
+  g.add(box(0.1, 0.9, 0.1, "#e9c46a", 0, 8.35, 3.0, 0.85));            // cross
+  g.add(box(0.5, 0.1, 0.1, "#e9c46a", 0, 8.5, 3.0, 0.85));
+  [-1, 1].forEach(sd => [-0.2, -2.4].forEach(z => g.add(box(0.08, 1.2, 0.7, "#6fa8dc", sd * 2.22, 2.0, z, 0.28))));
+  return g;
+}
+
+export function guardPost(title) {
+  const g = new THREE.Group();
+  const wood = "#8a5a32", dark = "#5d3b1e";
+  [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]].forEach(([x, z], i) =>
+    g.add(step(at(mesh(new THREE.CylinderGeometry(0.13, 0.16, 4.2, 6), wood), x, 2.1, z), 0.05 + i * 0.04)));
+  g.add(box(2.9, 0.22, 2.9, dark, 0, 3.0, 0, 0.3));                     // platform
+  [[0, 1.4, 2.9, 0.08], [0, -1.4, 2.9, 0.08]].forEach(([x, z, w, d]) => g.add(box(w, 0.7, d, wood, x, 3.45, z, 0.4)));
+  [[1.4, 0], [-1.4, 0]].forEach(([x, z]) => g.add(box(0.08, 0.7, 2.9, wood, x, 3.45, z, 0.42)));
+  const roof = mesh(new THREE.ConeGeometry(2.5, 1.5, 4), "#b03a2e"); roof.rotation.y = Math.PI / 4;
+  g.add(step(at(roof, 0, 5.1, 0), 0.6));
+  [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]].forEach(([x, z]) => g.add(step(at(mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.0, 5), wood), x, 3.9, z), 0.55)));
+  // ladder
+  [-0.25, 0.25].forEach(x => { const r = mesh(new THREE.BoxGeometry(0.07, 3.4, 0.07), wood); r.rotation.x = -0.25; g.add(step(at(r, x, 1.6, 1.75), 0.2)); });
+  for (let i = 0; i < 6; i++) { g.add(step(at(mesh(new THREE.BoxGeometry(0.55, 0.06, 0.06), wood), 0, 0.35 + i * 0.5, 2.15 - i * 0.12), 0.22)); }
+  // flag
+  g.add(step(at(mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.8, 5), "#ddd"), 1.1, 6.0, -1.1), 0.75));
+  const f = mesh(new THREE.BoxGeometry(0.9, 0.55, 0.03), "#c0392b"); g.add(step(at(f, 1.57, 6.55, -1.1), 0.8));
+  // roster board "DAFTAR PRAJURIT"
+  const tex = textTexture(title || ["DAFTAR PRAJURIT", "(masih kosong)"], { w: 512, h: 400, bg: "#c4925a" });
+  const face = new THREE.MeshStandardMaterial({ map: tex, flatShading: true });
+  const board = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.25, 0.08), [mat(wood), mat(wood), mat(wood), mat(wood), face, face]);
+  board.castShadow = true;
+  g.add(step(at(board, 2.35, 1.5, 1.4), 0.9));
+  [2.35 - 0.75, 2.35 + 0.75].forEach(x => g.add(step(at(mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.1, 5), wood), x, 1.05, 1.35), 0.88)));
+  g.userData.tex = tex;
+  return g;
+}
+
+export function spear() {
+  const g = new THREE.Group();
+  g.add(at(mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.9, 5), "#7a4f2a"), 0, 0.3, 0));
+  g.add(at(mesh(new THREE.ConeGeometry(0.06, 0.25, 4), "#cfd6dc", { metalness: 0.5, roughness: 0.4 }), 0, 1.35, 0));
   return g;
 }

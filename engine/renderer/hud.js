@@ -82,17 +82,26 @@ function watermark(g, tl) {
 }
 
 function socials(g, tl) {
-  const y0 = 1600, cols = [150, 600];
-  const rows = [[["tiktok", tl.handle], ["ig", tl.handle]], [["yt", tl.series], ["fb", tl.series]]];
-  g.globalAlpha = 0.9;
-  rows.forEach((row, ri) => row.forEach(([k, txt], ci) => {
-    const x = cols[ci], y = y0 + ri * 50;
-    icon(g, k, x, y, 34);
-    g.font = "800 27px Nunito"; g.textAlign = "left"; g.textBaseline = "middle";
-    g.lineWidth = 6; g.strokeStyle = "rgba(0,0,0,0.55)"; g.lineJoin = "round"; g.strokeText(txt, x + 28, y + 1);
-    g.fillStyle = "#fff"; g.fillText(txt, x + 28, y + 1);
-  }));
+  // Instagram-only footer: icon + handle, centred
+  const y = 1610;
+  g.globalAlpha = 0.92;
+  g.font = "800 32px Nunito";
+  const tw = g.measureText(tl.handle).width, x = W / 2 - (tw + 52) / 2;
+  icon(g, "ig", x + 20, y, 40);
+  g.textAlign = "left"; g.textBaseline = "middle"; g.lineJoin = "round";
+  g.lineWidth = 7; g.strokeStyle = "rgba(0,0,0,0.55)"; g.strokeText(tl.handle, x + 52, y + 1);
+  g.fillStyle = "#fff"; g.fillText(tl.handle, x + 52, y + 1);
   g.globalAlpha = 1;
+}
+
+function popBadge(g, tl, pop) {
+  if (!tl.ui?.popBadge || pop == null) return;
+  const txt = pop.toLocaleString("id-ID") + " RAKYAT";
+  g.font = "900 34px Nunito";
+  const w = g.measureText(txt).width + 86;
+  g.fillStyle = "rgba(22,26,38,0.72)"; rr(g, 44, 264, w, 60, 16); g.fill();
+  icon(g, "follow", 82, 294, 40);
+  g.fillStyle = "#ffd23f"; g.textAlign = "left"; g.textBaseline = "middle"; g.fillText(txt, 112, 296);
 }
 
 function wrap(g, text, maxW) {
@@ -172,6 +181,7 @@ export function drawHUD(g, tl, t, st) {
   fades(g, tl, t);
   endCard(g, tl, t);
   badges(g, tl, st.clock);
+  popBadge(g, tl, st.pop);
   watermark(g, tl);
   socials(g, tl);
   popups(g, tl, t);

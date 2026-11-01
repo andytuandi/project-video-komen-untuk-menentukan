@@ -1,0 +1,1433 @@
+{
+  "series": "Kerajaan Netizen",
+  "day": 2,
+  "handle": "@kerajaannetizen.idn",
+  "ui": {
+    "day": "DAY",
+    "popBadge": true
+  },
+  "population": 1,
+  "popKeys": [
+    {
+      "beat": 1,
+      "at": 0.42,
+      "v": 378,
+      "ramp": 1.6
+    }
+  ],
+  "voices": {
+    "raja": {
+      "voice": "id-ID-ArdiNeural",
+      "rate": "+8%",
+      "pitch": "-4Hz",
+      "fx": "royal"
+    }
+  },
+  "gap": 0.2,
+  "plazas": [
+    [
+      -0.3,
+      -18.5,
+      11.5
+    ],
+    [
+      5.5,
+      13.2,
+      4.2
+    ]
+  ],
+  "reserved": [
+    [
+      -16,
+      -33,
+      15,
+      -6
+    ],
+    [
+      1,
+      8,
+      12,
+      19
+    ]
+  ],
+  "cover": {
+    "frame_at": 38.5,
+    "top": "DAY 2",
+    "lines": [
+      "378 RAKYAT",
+      "LANGSUNG BANGUN"
+    ],
+    "bottom": "Masjid & gereja berdampingan"
+  },
+  "props": [
+    {
+      "id": "gate",
+      "type": "gate",
+      "at": [
+        0,
+        18
+      ],
+      "params": {
+        "title": "KERAJAAN NETIZEN"
+      }
+    },
+    {
+      "id": "sign",
+      "type": "sign",
+      "at": [
+        3.7,
+        18.6
+      ],
+      "params": {
+        "text": "RAKYAT: {pop}"
+      }
+    },
+    {
+      "id": "throne",
+      "type": "throne",
+      "at": [
+        2.5,
+        -1
+      ]
+    },
+    {
+      "id": "tent",
+      "type": "tent",
+      "at": [
+        -5.5,
+        -6
+      ],
+      "rot": 25
+    },
+    {
+      "id": "fire",
+      "type": "campfire",
+      "at": [
+        -1,
+        -1.5
+      ],
+      "params": {
+        "lit": {
+          "beat": 5,
+          "at": 0.45
+        }
+      }
+    },
+    {
+      "id": "mosque",
+      "type": "mosque",
+      "at": [
+        -5.2,
+        -19
+      ],
+      "build": {
+        "beat": 4,
+        "from": 0.03,
+        "to": 0.95
+      }
+    },
+    {
+      "id": "church",
+      "type": "church",
+      "at": [
+        4.6,
+        -19.5
+      ],
+      "build": {
+        "beat": 4,
+        "from": 0.08,
+        "to": 1.0
+      }
+    },
+    {
+      "id": "post",
+      "type": "guardpost",
+      "at": [
+        5.5,
+        13.2
+      ],
+      "params": {
+        "lines": [
+          "DAFTAR PRAJURIT",
+          "(masih kosong)"
+        ]
+      },
+      "build": {
+        "beat": 7,
+        "from": 0.05,
+        "to": 0.95
+      }
+    }
+  ],
+  "beats": [
+    {
+      "say": "Hari kedua. Raja bangun pagi... dan kaget.",
+      "clock": "06:10",
+      "pre": 0.2,
+      "loops": [
+        "wind"
+      ],
+      "sfx": [
+        [
+          "fanfare",
+          0.02,
+          0.7
+        ]
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              14,
+              30,
+              30
+            ],
+            "look": [
+              0,
+              0,
+              0
+            ]
+          },
+          "to": {
+            "pos": [
+              6,
+              9,
+              14
+            ],
+            "look": [
+              1.5,
+              1.5,
+              6
+            ]
+          },
+          "drift": 0
+        },
+        "actors": [
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              1.2,
+              7.5
+            ],
+            "face": 0,
+            "anim": "idle",
+            "anims": [
+              [
+                0.75,
+                "shrug"
+              ]
+            ]
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "at": [
+              -0.3,
+              7.0
+            ],
+            "face": 20,
+            "anim": "sleep"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Kemarin rakyatnya satu. Hari ini...",
+      "clock": "06:12",
+      "pause": 0.8,
+      "sfx": [
+        [
+          "ding",
+          0.42
+        ],
+        [
+          "fanfare",
+          0.8,
+          0.8
+        ]
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              4.3,
+              2.4,
+              9.8
+            ],
+            "look": [
+              4.4,
+              1.6,
+              18.4
+            ],
+            "fov": 46
+          },
+          "to": {
+            "pos": [
+              4.3,
+              2.3,
+              11.2
+            ],
+            "look": [
+              4.4,
+              1.8,
+              18.4
+            ],
+            "fov": 44
+          }
+        },
+        "actors": [
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              5.3,
+              17.6
+            ],
+            "face": 200,
+            "anim": "point",
+            "anims": [
+              [
+                0.5,
+                "wave"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "say": "Tiga ratus tujuh puluh delapan! Rakyat berdatangan.",
+      "pause": 1.2,
+      "loops": [
+        "cart"
+      ],
+      "sfx": [
+        [
+          "chirp",
+          0.6
+        ]
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              2.5,
+              3.0,
+              0.5
+            ],
+            "look": [
+              0,
+              1.2,
+              14
+            ]
+          },
+          "to": {
+            "pos": [
+              2.8,
+              3.6,
+              -1.5
+            ],
+            "look": [
+              0,
+              1.0,
+              10
+            ]
+          }
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "arrive",
+            "show": 60,
+            "fromZ": 30,
+            "region": [
+              -9,
+              -1,
+              9,
+              12
+            ],
+            "avoid": [
+              [
+                -8.6,
+                -9.2,
+                -2.4,
+                -2.8
+              ],
+              [
+                -2.3,
+                -2.8,
+                0.3,
+                -0.2
+              ],
+              [
+                1.4,
+                -2,
+                3.6,
+                0.2
+              ],
+              [
+                3.5,
+                10,
+                9.5,
+                17
+              ],
+              [
+                -1.2,
+                1.2,
+                1.2,
+                12
+              ]
+            ],
+            "lookAt": [
+              2.5,
+              -0.5
+            ],
+            "spread": 0.55,
+            "travel": 0.4
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              -1.6,
+              3.2
+            ],
+            "face": 15,
+            "anim": "idle",
+            "anims": [
+              [
+                0.3,
+                "shrug"
+              ],
+              [
+                0.7,
+                "wave"
+              ]
+            ]
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "at": [
+              -2.8,
+              2.6
+            ],
+            "face": 20,
+            "anim": "hop"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Wahai rakyatku! Usulan terbanyak kemarin: rumah ibadah.",
+      "popup": {
+        "text": "USULAN #1: RUMAH IBADAH",
+        "icon": "comment",
+        "word": "rumah",
+        "color": "#2a9d8f",
+        "dur": 2.6
+      },
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              7.5,
+              3.8,
+              11.5
+            ],
+            "look": [
+              2.5,
+              1.8,
+              -0.5
+            ],
+            "fov": 44
+          },
+          "to": {
+            "pos": [
+              6.5,
+              3.4,
+              9.5
+            ],
+            "look": [
+              2.5,
+              1.9,
+              -0.5
+            ],
+            "fov": 42
+          }
+        },
+        "actors": [
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              2.5,
+              -0.85
+            ],
+            "y": 0.92,
+            "face": 15,
+            "anim": "present",
+            "anims": [
+              [
+                0.5,
+                "raise"
+              ]
+            ]
+          },
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "cheer",
+            "show": 60,
+            "region": [
+              -9,
+              -1,
+              9,
+              12
+            ],
+            "avoid": [
+              [
+                -8.6,
+                -9.2,
+                -2.4,
+                -2.8
+              ],
+              [
+                -2.3,
+                -2.8,
+                0.3,
+                -0.2
+              ],
+              [
+                1.4,
+                -2,
+                3.6,
+                0.2
+              ],
+              [
+                3.5,
+                10,
+                9.5,
+                17
+              ],
+              [
+                -1.2,
+                1.2,
+                1.2,
+                12
+              ]
+            ],
+            "lookAt": [
+              2.5,
+              -0.5
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "say": "Masjid dan gereja, dibangun berdampingan. Rakyat gotong royong.",
+      "clock": [
+        "07:00",
+        "13:00"
+      ],
+      "pause": 1.4,
+      "loops": [
+        "hammering"
+      ],
+      "transition": "white",
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              18,
+              24,
+              2
+            ],
+            "look": [
+              -0.3,
+              1,
+              -19
+            ]
+          },
+          "to": {
+            "pos": [
+              -16,
+              22,
+              2
+            ],
+            "look": [
+              -0.3,
+              1,
+              -19
+            ]
+          },
+          "ease": "linear",
+          "drift": 0
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "work",
+            "show": 44,
+            "sites": [
+              [
+                -5.2,
+                -19,
+                3.8
+              ],
+              [
+                4.6,
+                -19.6,
+                3.6
+              ]
+            ]
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              -0.4,
+              -11
+            ],
+            "face": 180,
+            "anim": "talk"
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "path": [
+              [
+                -1.8,
+                -10.5
+              ],
+              [
+                -6,
+                -15
+              ],
+              [
+                3,
+                -14
+              ],
+              [
+                5,
+                -25
+              ],
+              [
+                -7,
+                -26
+              ],
+              [
+                -1.8,
+                -10.5
+              ]
+            ],
+            "smooth": false,
+            "anim": "fly",
+            "y": 3
+          }
+        ]
+      }
+    },
+    {
+      "say": "Raja bagian konsumsi. Kompor... bagian kompor.",
+      "clock": "12:40",
+      "pause": 0.4,
+      "sfx": [
+        [
+          "chirp",
+          0.3
+        ],
+        [
+          "fire",
+          0.47
+        ]
+      ],
+      "loops": [
+        "crackle"
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              1.6,
+              1.4,
+              -5.6
+            ],
+            "look": [
+              -0.4,
+              0.6,
+              -1.0
+            ],
+            "fov": 44
+          },
+          "to": {
+            "pos": [
+              1.4,
+              1.35,
+              -5.0
+            ],
+            "look": [
+              -0.4,
+              0.6,
+              -1.0
+            ],
+            "fov": 42
+          }
+        },
+        "actors": [
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "at": [
+              0.4,
+              -0.9
+            ],
+            "face": 247,
+            "ground": true,
+            "anim": "hop",
+            "anims": [
+              [
+                0.25,
+                "fire"
+              ]
+            ],
+            "fireAt": 0.42,
+            "fireLen": 0.25
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              -2.4,
+              0.8
+            ],
+            "face": 150,
+            "anim": "present",
+            "anims": [
+              [
+                0.6,
+                "shrug"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "say": "Masjid dan gereja, bersebelahan. Kerajaan ini milik semua rakyat.",
+      "clock": "13:30",
+      "pause": 0.5,
+      "sfx": [
+        [
+          "fanfare",
+          0.05,
+          0.7
+        ]
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              -0.4,
+              13,
+              18
+            ],
+            "look": [
+              -0.3,
+              3.5,
+              -19
+            ]
+          },
+          "to": {
+            "pos": [
+              -0.4,
+              8.5,
+              6
+            ],
+            "look": [
+              -0.3,
+              3.8,
+              -19
+            ]
+          },
+          "drift": 0
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "cheer",
+            "show": 60,
+            "region": [
+              -9,
+              -13.5,
+              9,
+              -7
+            ],
+            "lookAt": [
+              -0.3,
+              -19
+            ]
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              -0.4,
+              -6.5
+            ],
+            "face": 180,
+            "anim": "raise"
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "at": [
+              -1.6,
+              -6.8
+            ],
+            "face": 180,
+            "anim": "fly"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Usulan kedua: pos jaga prajurit.",
+      "clock": [
+        "14:00",
+        "17:30"
+      ],
+      "pause": 1.6,
+      "loops": [
+        "hammering"
+      ],
+      "popup": {
+        "text": "USULAN #2: POS JAGA",
+        "icon": "comment",
+        "word": "pos",
+        "color": "#e76f51",
+        "dur": 2.4
+      },
+      "transition": "white",
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              -6,
+              7,
+              3
+            ],
+            "look": [
+              5.5,
+              2.2,
+              13.2
+            ]
+          },
+          "to": {
+            "pos": [
+              -4,
+              6,
+              4.5
+            ],
+            "look": [
+              5.5,
+              2.6,
+              13.2
+            ]
+          },
+          "ease": "linear",
+          "drift": 0
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "work",
+            "show": 16,
+            "sites": [
+              [
+                5.5,
+                13.2,
+                2.4
+              ]
+            ]
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              1.6,
+              9.5
+            ],
+            "face": 60,
+            "anim": "talk"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Sekarang ada yang jaga. Bukan Raja lagi.",
+      "clock": "17:40",
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              5.5,
+              1.9,
+              4.2
+            ],
+            "look": [
+              5.5,
+              1.5,
+              10.6
+            ],
+            "fov": 44
+          },
+          "to": {
+            "pos": [
+              5.5,
+              1.85,
+              5.0
+            ],
+            "look": [
+              5.5,
+              1.5,
+              10.6
+            ],
+            "fov": 42
+          }
+        },
+        "actors": [
+          {
+            "id": "s1",
+            "type": "soldier",
+            "at": [
+              4.8,
+              10.6
+            ],
+            "face": 180,
+            "anim": "idle"
+          },
+          {
+            "id": "s2",
+            "type": "soldier",
+            "at": [
+              6.2,
+              10.6
+            ],
+            "face": 180,
+            "anim": "idle",
+            "phase": 1.1
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              3.4,
+              8.6
+            ],
+            "face": 120,
+            "anim": "present",
+            "anims": [
+              [
+                0.55,
+                "shrug"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "say": "Prajuritnya belum punya nama. Kirim gift, namamu ditulis di papan ini.",
+      "popup": {
+        "text": "GIFT = JADI PRAJURIT",
+        "icon": "gift",
+        "word": "gift",
+        "color": "#f4a261",
+        "dur": 2.8,
+        "y": 1420
+      },
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              7.6,
+              1.6,
+              10.2
+            ],
+            "look": [
+              7.85,
+              0.95,
+              14.6
+            ],
+            "fov": 44
+          },
+          "to": {
+            "pos": [
+              7.65,
+              1.55,
+              10.8
+            ],
+            "look": [
+              7.85,
+              0.95,
+              14.6
+            ],
+            "fov": 42
+          }
+        },
+        "actors": [
+          {
+            "id": "s2",
+            "type": "soldier",
+            "at": [
+              6.2,
+              10.6
+            ],
+            "face": 180,
+            "anim": "idle",
+            "phase": 1.1
+          }
+        ]
+      }
+    },
+    {
+      "say": "Kompor melamar jadi prajurit. Ditolak. Belum punya KTP.",
+      "sfx": [
+        [
+          "chirp",
+          0.15
+        ],
+        [
+          "bonk",
+          0.55
+        ],
+        [
+          "chirp_down",
+          0.85
+        ]
+      ],
+      "clock": "17:50",
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              2.2,
+              2.1,
+              4.0
+            ],
+            "look": [
+              4.6,
+              1.1,
+              10.4
+            ],
+            "fov": 44
+          },
+          "to": {
+            "pos": [
+              2.5,
+              2.0,
+              4.8
+            ],
+            "look": [
+              4.6,
+              1.1,
+              10.4
+            ],
+            "fov": 42
+          }
+        },
+        "actors": [
+          {
+            "id": "s1",
+            "type": "soldier",
+            "at": [
+              4.8,
+              10.6
+            ],
+            "face": 180,
+            "anim": "idle",
+            "anims": [
+              [
+                0.5,
+                "point"
+              ]
+            ]
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "path": [
+              [
+                3.0,
+                6.8
+              ],
+              [
+                4.2,
+                9.0
+              ]
+            ],
+            "move": [
+              0,
+              0.35
+            ],
+            "face": 15,
+            "anim": "hop",
+            "anims": [
+              [
+                0.4,
+                "look"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "say": "Tiga ratus tujuh puluh delapan rakyat. Rumahnya... belum ada.",
+      "clock": "20:10",
+      "transition": "fade",
+      "music": "soft",
+      "loops": [
+        "crickets",
+        "crackle"
+      ],
+      "sfx": [
+        [
+          "bonk",
+          0.85
+        ]
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              9,
+              6,
+              11
+            ],
+            "look": [
+              -1,
+              0.8,
+              -2
+            ]
+          },
+          "to": {
+            "pos": [
+              7.5,
+              5,
+              9
+            ],
+            "look": [
+              -1,
+              0.8,
+              -2
+            ]
+          }
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "stand",
+            "show": 60,
+            "region": [
+              -9,
+              -4,
+              9,
+              9
+            ],
+            "avoid": [
+              [
+                -8.6,
+                -9.2,
+                -2.4,
+                -2.8
+              ],
+              [
+                -2.6,
+                -3.0,
+                0.6,
+                0.0
+              ],
+              [
+                1.4,
+                -2,
+                3.6,
+                0.2
+              ],
+              [
+                3.5,
+                10,
+                9.5,
+                17
+              ]
+            ],
+            "lookAt": [
+              -1,
+              -1.5
+            ]
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              1.0,
+              -1.3
+            ],
+            "face": 270,
+            "anim": "shrug"
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "at": [
+              -3.2,
+              -1.8
+            ],
+            "face": 90,
+            "anim": "sleep"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Follow, jadi rakyat ke tiga ratus tujuh puluh sembilan. Komen, besok bangun apa?",
+      "music": "soft",
+      "loops": [
+        "crickets",
+        "crackle"
+      ],
+      "popup": {
+        "text": "FOLLOW = JADI RAKYAT",
+        "icon": "follow",
+        "word": "follow",
+        "color": "#e63946",
+        "dur": 2.6
+      },
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              7.5,
+              5,
+              9
+            ],
+            "look": [
+              -1,
+              0.8,
+              -2
+            ]
+          },
+          "to": {
+            "pos": [
+              16,
+              30,
+              34
+            ],
+            "look": [
+              -1,
+              0,
+              -6
+            ]
+          },
+          "drift": 0
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "cheer",
+            "show": 60,
+            "region": [
+              -9,
+              -4,
+              9,
+              9
+            ],
+            "avoid": [
+              [
+                -8.6,
+                -9.2,
+                -2.4,
+                -2.8
+              ],
+              [
+                -2.6,
+                -3.0,
+                0.6,
+                0.0
+              ],
+              [
+                1.4,
+                -2,
+                3.6,
+                0.2
+              ],
+              [
+                3.5,
+                10,
+                9.5,
+                17
+              ]
+            ],
+            "lookAt": [
+              -1,
+              -1.5
+            ]
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              1.0,
+              -1.3
+            ],
+            "face": 40,
+            "anim": "wave"
+          },
+          {
+            "id": "kompor",
+            "type": "dragon",
+            "at": [
+              -3.2,
+              -1.8
+            ],
+            "face": 90,
+            "anim": "sleep"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Raja nggak minta istana, kok. Tapi kalau dikasih... ya sudah.",
+      "pause": 1.8,
+      "music": "soft",
+      "loops": [
+        "crickets"
+      ],
+      "sfx": [
+        [
+          "ding",
+          0.05
+        ]
+      ],
+      "end": {
+        "at": 0.0,
+        "title": "KOMEN DI BAWAH",
+        "q": "Besok kerajaan bangun apa?",
+        "chips": [
+          "Rumah rakyat?",
+          "Pasar?",
+          "Istana Raja?"
+        ],
+        "follow": "FOLLOW = JADI RAKYAT"
+      },
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              16,
+              30,
+              34
+            ],
+            "look": [
+              -1,
+              0,
+              -6
+            ]
+          },
+          "to": {
+            "pos": [
+              17,
+              31,
+              36
+            ],
+            "look": [
+              -1,
+              0,
+              -6
+            ]
+          },
+          "drift": 0
+        },
+        "actors": [
+          {
+            "id": "rakyat",
+            "type": "crowd",
+            "count": 60,
+            "seed": 11,
+            "mode": "stand",
+            "show": 60,
+            "region": [
+              -9,
+              -4,
+              9,
+              9
+            ],
+            "avoid": [
+              [
+                -8.6,
+                -9.2,
+                -2.4,
+                -2.8
+              ],
+              [
+                -2.6,
+                -3.0,
+                0.6,
+                0.0
+              ],
+              [
+                1.4,
+                -2,
+                3.6,
+                0.2
+              ],
+              [
+                3.5,
+                10,
+                9.5,
+                17
+              ]
+            ],
+            "lookAt": [
+              -1,
+              -1.5
+            ]
+          },
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              1.0,
+              -1.3
+            ],
+            "face": 40,
+            "anim": "idle"
+          }
+        ]
+      }
+    }
+  ]
+}

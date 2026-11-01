@@ -27,7 +27,7 @@ sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 Object.assign(sun.shadow.camera, { left: -32, right: 32, top: 32, bottom: -32, near: 1, far: 260 });
 sun.shadow.bias = -0.0006;
-sun.shadow.normalBias = 0.03;
+sun.shadow.normalBias = 0.05;
 scene.add(sun, sun.target);
 
 let TL = null;
@@ -44,9 +44,10 @@ function buildWorld(seed = 7) {
   const pos = geo.attributes.position;
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i), z = pos.getZ(i), d = Math.hypot(x, z);
-    let h = (Math.sin(x * 0.11) + Math.cos(z * 0.09)) * 0.12;
-    if (d > 50) h += (d - 50) * 0.05 * (0.6 + 0.4 * Math.sin(x * 0.05 + z * 0.07));
-    pos.setY(i, h * (d < 12 ? 0.2 : 1));
+    // flat inside the kingdom so roads/plazas never z-fight with the grass; hills only far away
+    let h = 0;
+    if (d > 55) h = (Math.sin(x * 0.11) + Math.cos(z * 0.09)) * 0.12 * clamp((d - 55) / 15) + (d - 55) * 0.05 * (0.6 + 0.4 * Math.sin(x * 0.05 + z * 0.07));
+    pos.setY(i, h - 0.02);
   }
   geo = geo.toNonIndexed();
   const cols = [];
@@ -62,13 +63,18 @@ function buildWorld(seed = 7) {
   scene.add(ground);
 
   // dirt road from the gate to the clearing, and the clearing itself
-  const dirt = A.mat("#c79d6b", { roughness: 1 });
+  const dirt = new THREE.MeshStandardMaterial({ color: "#c79d6b", roughness: 1, flatShading: true, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
   const road = new THREE.Mesh(new THREE.PlaneGeometry(3, 70, 1, 10), dirt);
-  road.rotation.x = -Math.PI / 2; road.position.set(0, 0.04, 33); road.receiveShadow = true; scene.add(road);
+  road.rotation.x = -Math.PI / 2; road.position.set(0, 0.0, 33); road.receiveShadow = true; scene.add(road);
   const clearing = new THREE.Mesh(new THREE.CircleGeometry(9, 9), dirt);
-  clearing.rotation.x = -Math.PI / 2; clearing.position.set(0, 0.035, -1); clearing.receiveShadow = true; scene.add(clearing);
+  clearing.rotation.x = -Math.PI / 2; clearing.position.set(0, 0.002, -1); clearing.receiveShadow = true; scene.add(clearing);
+  for (const [x, z, rad] of (TL.plazas || [])) {
+    const pz = new THREE.Mesh(new THREE.CircleGeometry(rad, 10), dirt);
+    pz.rotation.x = -Math.PI / 2; pz.position.set(x, 0.004, z); pz.receiveShadow = true; scene.add(pz);
+  }
 
-  const free = (x, z) => !(Math.abs(x) < 4.5 && z > -2) && Math.hypot(x, z + 1) > 11;
+  const free = (x, z) => !(Math.abs(x) < 4.5 && z > -2) && Math.hypot(x, z + 1) > 11 &&
+    !(TL.reserved || []).some(([x0, z0, x1, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
   // grass tufts + flowers (instanced)
   const tuft = new THREE.InstancedMesh(new THREE.ConeGeometry(0.07, 0.34, 3), A.mat("#4f9a3c"), 3200);
   const flower = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.08, 0), new THREE.MeshStandardMaterial({ flatShading: true }), 500);
@@ -77,6 +83,7 @@ function buildWorld(seed = 7) {
   while (n < 3200) {
     const x = (r() - 0.5) * 140, z = (r() - 0.5) * 140;
     if (Math.abs(x) < 1.8 && z > -1) continue;
+    if ((TL.plazas || []).some(([px, pz, pr]) => Math.hypot(x - px, z - pz) < pr)) continue;
     m4.makeTranslation(x, 0.15, z); tuft.setMatrixAt(n++, m4);
   }
   const fcol = ["#ffffff", "#ffd84d", "#ff8fb3", "#b48cff"].map(c => new THREE.Color(c));
@@ -157,9 +164,14 @@ export function clockAt(t) {
 
 function populationAt(t) {
   let v = TL.population ?? 1;
-  for (const p of TL.popKeys || []) if (p.t <= t) v = p.v;
+  for (const p of TL.popKeys || []) {
+    if (p.t > t) break;
+    const from = v;
+    v = p.ramp ? Math.round(lerp(from, p.v, ease(clamp((t - p.t) / p.ramp)))) : p.v;
+  }
   return v;
 }
+window.populationAt = populationAt;
 
 function shotAt(t) {
   let s = TL.shots[0];
@@ -179,6 +191,9 @@ function makeProp(spec) {
     case "crate": return A.crate();
     case "sack": return A.sack();
     case "hammer": return A.hammer();
+    case "mosque": return A.mosque();
+    case "church": return A.church();
+    case "guardpost": return A.guardPost(p.lines);
     default: throw new Error("unknown prop " + spec.type);
   }
 }
@@ -216,7 +231,9 @@ function updateProps(t, hour, night) {
 function makeActor(a) {
   switch (a.type) {
     case "king": return A.person({ king: true, shirt: "#6b2fa0" });
-    case "villager": return A.person({ shirt: a.shirt || "#6aa7d8", hat: a.hat, mustache: a.mustache });
+    case "villager": return A.person({ shirt: a.shirt || "#6aa7d8", hat: a.hat, mustache: a.mustache, hair: a.hair, hijab: a.hijab, skin: a.skin });
+    case "soldier": return A.person({ soldier: true, shirt: "#5b6b7a", pants: "#3b4652", skin: a.skin });
+    case "crowd": return makeCrowd(a);
     case "dragon": return A.dragon();
     case "cart": return A.cart();
     default: throw new Error("unknown actor " + a.type);
@@ -337,6 +354,72 @@ function poseActor(entry, a, t, shot) {
   if (entry.hammer) entry.hammer.visible = !!a.hammer;
 }
 
+
+// ------------------------------------------------------------------ crowd of citizens
+const SHIRTS = ["#e76f51", "#2a9d8f", "#e9c46a", "#6aa7d8", "#8ab17d", "#f4a261", "#9b5de5", "#f15bb5", "#4d908e", "#ffffff", "#577590", "#bc6c25"];
+const SKINS = ["#c68a5a", "#b97a4c", "#d9a27a", "#a8693f", "#e0b48c"];
+const HIJABS = ["#3d6fb6", "#2a9d8f", "#e76f51", "#6d597a", "#f2cc8f", "#264653"];
+
+function makeCrowd(a) {
+  const g = new THREE.Group();
+  const r = A.rng(a.seed || 5);
+  g.userData.members = [];
+  for (let i = 0; i < (a.count || 40); i++) {
+    const woman = r() < 0.42, k = r();
+    const o = { shirt: SHIRTS[Math.floor(r() * SHIRTS.length)], skin: SKINS[Math.floor(r() * SKINS.length)],
+      pants: r() < 0.5 ? "#efe6d2" : "#4a4e69" };
+    if (woman) { o.mustache = false; if (k < 0.5) { o.hair = "hijab"; o.hijab = HIJABS[Math.floor(r() * HIJABS.length)]; } else o.hair = "bun"; }
+    else { o.mustache = r() < 0.55; if (r() < 0.3) o.hat = "straw"; }
+    const obj = A.person(o);
+    obj.scale.setScalar(0.88 + r() * 0.16);
+    g.add(obj);
+    g.userData.members.push({ entry: { obj, type: "villager" }, rnd: [r(), r(), r(), r(), r()] });
+  }
+  return g;
+}
+
+function crowdTargets(a, members) {
+  if (a._targets) return a._targets;
+  const [x0, z0, x1, z1] = a.region || [-10, -8, 10, 10];
+  const blocked = (x, z) => (a.avoid || []).some(([ax0, az0, ax1, az1]) => x > ax0 && x < ax1 && z > az0 && z < az1);
+  a._targets = members.map(({ rnd }, i) => {
+    let u = rnd[0], v = rnd[1], x, z, n = 0;
+    do { x = x0 + u * (x1 - x0); z = z0 + v * (z1 - z0); u = (u * 7.31 + 0.137) % 1; v = (v * 3.77 + 0.411) % 1; } while (blocked(x, z) && ++n < 30);
+    return [x, z];
+  });
+  return a._targets;
+}
+
+function poseCrowd(e, a, t, shot) {
+  const members = e.obj.userData.members;
+  const N = Math.min(a.show ?? members.length, members.length);
+  const targets = crowdTargets(a, members);
+  members.forEach((m, i) => {
+    const vis = i < N;
+    m.entry.obj.visible = vis;
+    if (!vis) return;
+    const [r0, r1, r2, r3, r4] = m.rnd;
+    const target = targets[i];
+    let spec;
+    if (a.mode === "arrive") {
+      const delay = (i / N) * (a.spread ?? 0.55), travel = a.travel ?? 0.42;
+      const start = [(r1 - 0.5) * 2.2, (a.fromZ ?? 36) + r2 * 6];
+      spec = { path: [start, [(r3 - 0.5) * 2.2, 17], target], move: [delay, delay + travel], smooth: false, anim: "idle", lookAt: a.lookAt, phase: r4 * 10 };
+    } else if (a.mode === "work") {
+      const sites = a.sites || [[0, 0, 3]];
+      const [sx, sz, sr] = sites[i % sites.length];
+      const pts = [0, 1, 2, 3].map(k => { const ang = (r0 + k * 0.27 + r2 * 0.1) * Math.PI * 2; const rr = sr + r1 * 1.4; return [sx + Math.cos(ang) * rr, sz + Math.sin(ang) * rr]; });
+      spec = { path: pts, dwell: 0.3, smooth: false, lookAt: [sx, sz], anim: r3 < 0.75 ? "hammer" : "talk", hammer: r3 < 0.75, phase: r4 * 10 };
+    } else if (a.mode === "cheer") {
+      spec = { at: target, lookAt: a.lookAt, anim: r3 < 0.6 ? "wave" : "raise", phase: r4 * 10 };
+    } else {
+      spec = { at: target, lookAt: a.lookAt, anim: r3 < 0.25 ? "talk" : "idle", talk: r3 < 0.25, phase: r4 * 10 };
+    }
+    poseActor(m.entry, spec, t + r4 * 0.0, shot);
+    if (a.mode === "cheer") m.entry.obj.position.y += Math.max(0, Math.sin((t + r4 * 3) * 7)) * 0.25;
+  });
+}
+
 function updateActors(t, shot) {
   const seen = new Set();
   for (const a of shot.actors || []) {
@@ -345,7 +428,7 @@ function updateActors(t, shot) {
     e.obj.visible = true;
     e.obj.scale.setScalar(a.scale || 1);
     seen.add(a.id);
-    poseActor(e, a, t, shot);
+    if (e.type === "crowd") { e.obj.scale.setScalar(1); poseCrowd(e, a, t, shot); } else poseActor(e, a, t, shot);
   }
   for (const [id, e] of actors) if (!seen.has(id)) e.obj.visible = false;
 }
@@ -418,7 +501,7 @@ function draw(t) {
 
 window.renderFrame = (t, mime = "image/jpeg") => {
   const st = draw(t);
-  drawHUD(ctx, TL, t, { ...st, clock: clockAt(t) });
+  drawHUD(ctx, TL, t, { ...st, clock: clockAt(t), pop: populationAt(t) });
   return out.toDataURL(mime, 0.93);
 };
 
