@@ -534,6 +534,9 @@ window.renderFrame = (t, mime = "image/jpeg") => {
   return out.toDataURL(mime, 0.93);
 };
 
+// raw 3D frame without HUD (used by tools/logo.js)
+window.renderRaw = (t) => { draw(t); return glCanvas.toDataURL("image/png"); };
+
 window.renderCover = (t) => {
   draw(t);
   drawCover(ctx, TL);
