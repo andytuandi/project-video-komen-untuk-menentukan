@@ -459,3 +459,93 @@ export function spear() {
   g.add(at(mesh(new THREE.ConeGeometry(0.06, 0.25, 4), "#cfd6dc", { metalness: 0.5, roughness: 0.4 }), 0, 1.35, 0));
   return g;
 }
+
+// ---------------------------------------------------------------- Day 3: rice fields
+const decal = (color, opts = {}) => new THREE.MeshStandardMaterial({ color, roughness: 1, flatShading: true, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3, ...opts });
+export const riceMat = new THREE.MeshStandardMaterial({ color: "#6cc24a", flatShading: true, roughness: 0.9 });
+
+export function paddyField(cols = 3, rows = 4, size = 4.2) {
+  const g = new THREE.Group();
+  const gap = 0.35, W = cols * size + (cols + 1) * gap, D = rows * size + (rows + 1) * gap;
+  const mud = decal("#7a5a3a"), water = decal("#7fc8c9", { transparent: true, opacity: 0.85, roughness: 0.25, metalness: 0.1, emissive: "#2a6f78", emissiveIntensity: 0.15 });
+  const dike = "#8f6b45";
+  const riceRoot = new THREE.Group(); g.add(riceRoot); g.userData.riceRoot = riceRoot;
+  const plant = new THREE.ConeGeometry(0.07, 0.45, 3); plant.translate(0, 0.22, 0);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(1, 1, 1);
+  let k = 0;
+  for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++, k++) {
+    const x = -W / 2 + gap + size / 2 + c * (size + gap), z = -D / 2 + gap + size / 2 + r * (size + gap);
+    const soil = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mud); soil.rotation.x = -Math.PI / 2; soil.receiveShadow = true;
+    g.add(step(at(soil, x, 0.006, z), 0.02 + k * 0.012));
+    const wt = new THREE.Mesh(new THREE.PlaneGeometry(size, size), water); wt.rotation.x = -Math.PI / 2; wt.receiveShadow = true;
+    g.add(step(at(wt, x, 0.03, z), 0.3 + k * 0.012));
+    const n = 9, inst = new THREE.InstancedMesh(plant, riceMat, n * n);
+    let i = 0;
+    for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
+      const px = x - size / 2 + (a + 0.5) * size / n, pz = z - size / 2 + (b + 0.5) * size / n;
+      q.setFromEuler(new THREE.Euler(((a * 7 + b * 3) % 5 - 2) * 0.05, (a * b) % 6, 0));
+      m4.compose(new THREE.Vector3(px, 0.02, pz), q, sc); inst.setMatrixAt(i++, m4);
+    }
+    inst.castShadow = true;
+    riceRoot.add(step(inst, 0.5 + k * 0.035));
+  }
+  for (let c = 0; c <= cols; c++) g.add(step(at(mesh(new THREE.BoxGeometry(gap, 0.18, D), dike), -W / 2 + gap / 2 + c * (size + gap), 0.09, 0), 0.08 + c * 0.03));
+  for (let r = 0; r <= rows; r++) g.add(step(at(mesh(new THREE.BoxGeometry(W, 0.18, gap), dike), 0, 0.09, -D / 2 + gap / 2 + r * (size + gap)), 0.14 + r * 0.03));
+  return g;
+}
+
+export function hut() {
+  const g = new THREE.Group();
+  const wood = "#8a5a32", straw = "#d6b25e";
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([x, z], i) => g.add(step(at(mesh(new THREE.CylinderGeometry(0.08, 0.1, 2.4, 5), wood), x, 1.2, z), i * 0.05)));
+  g.add(box(2.3, 0.12, 2.3, "#b07a45", 0, 0.75, 0, 0.3));
+  const roof = mesh(new THREE.ConeGeometry(2.1, 1.3, 4), straw); roof.rotation.y = Math.PI / 4;
+  g.add(step(at(roof, 0, 2.95, 0), 0.6));
+  return g;
+}
+
+export function scarecrow() {
+  const g = new THREE.Group();
+  g.add(at(mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.0, 5), "#7a4f2a"), 0, 1.0, 0));
+  { const arm = mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.4, 5), "#7a4f2a"); arm.rotation.z = Math.PI / 2; g.add(at(arm, 0, 1.5, 0)); }
+  g.add(at(mesh(new THREE.BoxGeometry(0.5, 0.55, 0.25), "#c0392b"), 0, 1.35, 0));
+  g.add(at(mesh(new THREE.IcosahedronGeometry(0.22, 0), "#e9d8a6"), 0, 1.85, 0));
+  g.add(at(mesh(new THREE.ConeGeometry(0.42, 0.25, 8), "#d6b25e"), 0, 2.05, 0));
+  return g;
+}
+
+export function buffalo() {
+  const g = new THREE.Group(), parts = {};
+  const hide = "#4f4a57";
+  g.add(at(mesh(new THREE.BoxGeometry(0.9, 0.75, 1.6), hide), 0, 0.95, 0));
+  const head = new THREE.Group(); head.position.set(0, 1.05, 0.95); g.add(head); parts.head = head;
+  head.add(mesh(new THREE.BoxGeometry(0.5, 0.45, 0.6), hide));
+  head.add(at(mesh(new THREE.BoxGeometry(0.42, 0.25, 0.2), "#6b6573"), 0, -0.12, 0.35));
+  [-1, 1].forEach(sd => {
+    const h = mesh(new THREE.ConeGeometry(0.07, 0.6, 5), "#efe6d2"); h.rotation.z = sd * -1.2; h.rotation.x = -0.3;
+    head.add(at(h, sd * 0.45, 0.28, -0.05));
+    head.add(at(new THREE.Mesh(new THREE.SphereGeometry(0.045, 5, 4), mat("#111")), sd * 0.16, 0.08, 0.31));
+  });
+  [["legFL", 0.3, 0.6], ["legFR", -0.3, 0.6], ["legBL", 0.3, -0.6], ["legBR", -0.3, -0.6]].forEach(([k, x, z]) => {
+    const p = new THREE.Group(); p.position.set(x, 0.62, z);
+    p.add(at(mesh(new THREE.BoxGeometry(0.18, 0.62, 0.18), hide), 0, -0.31, 0)); g.add(p); parts[k] = p;
+  });
+  const tail = mesh(new THREE.BoxGeometry(0.06, 0.6, 0.06), hide); tail.rotation.x = 0.3; g.add(at(tail, 0, 0.95, -0.85));
+  g.userData.parts = parts;
+  return g;
+}
+
+export function nameTag(text, sub, color = "#ffd23f") {
+  const c = document.createElement("canvas"); c.width = 640; c.height = sub ? 200 : 130;
+  const x = c.getContext("2d");
+  x.fillStyle = "rgba(22,26,38,0.82)";
+  const r = 40, w = c.width, h = c.height;
+  x.beginPath(); x.moveTo(r, 0); x.arcTo(w, 0, w, h, r); x.arcTo(w, h, 0, h, r); x.arcTo(0, h, 0, 0, r); x.arcTo(0, 0, w, 0, r); x.fill();
+  x.textAlign = "center"; x.textBaseline = "middle";
+  x.fillStyle = color; x.font = "900 70px Nunito"; x.fillText(text, w / 2, sub ? 70 : h / 2 + 4);
+  if (sub) { x.fillStyle = "#ffffff"; x.font = "800 46px Nunito"; x.fillText(sub, w / 2, 150); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false }));
+  s.scale.set(1.6, 1.6 * c.height / c.width, 1); s.renderOrder = 10;
+  return s;
+}

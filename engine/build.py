@@ -157,9 +157,11 @@ def build_timeline(ep, cache_dir):
             q["show"] = beat_t(p["show"], p.get("showAt", 0))
         if isinstance(p.get("hide"), int):
             q["hide"] = beat_t(p["hide"], p.get("hideAt", 0))
+        for key in ("build", "grow", "ripe"):
+            if p.get(key):
+                bd = p[key]
+                q[key] = [beat_t(bd["beat"], bd.get("from", 0)), beat_t(bd.get("endBeat", bd["beat"]), bd.get("to", 1))]
         if p.get("build"):
-            bd = p["build"]
-            q["build"] = [beat_t(bd["beat"], bd.get("from", 0)), beat_t(bd.get("endBeat", bd["beat"]), bd.get("to", 1))]
             q.setdefault("show", q["build"][0])
         if p.get("params", {}).get("lit"):
             lit = p["params"]["lit"]

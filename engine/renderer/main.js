@@ -194,6 +194,9 @@ function makeProp(spec) {
     case "mosque": return A.mosque();
     case "church": return A.church();
     case "guardpost": return A.guardPost(p.lines);
+    case "paddy": return A.paddyField(p.cols, p.rows, p.size);
+    case "hut": return A.hut();
+    case "scarecrow": return A.scarecrow();
     default: throw new Error("unknown prop " + spec.type);
   }
 }
@@ -220,6 +223,12 @@ function updateProps(t, hour, night) {
       obj.userData.flame.visible = on > 0;
       obj.userData.light.intensity = on * (8 + 2 * Math.sin(t * 17)) * (0.35 + night);
     }
+    if (spec.type === "paddy") {
+      const gk = spec.grow ? clamp((t - spec.grow[0]) / (spec.grow[1] - spec.grow[0])) : 1;
+      obj.userData.riceRoot.scale.y = lerp(0.35, 1.45, ease(gk));
+      const rk = spec.ripe ? clamp((t - spec.ripe[0]) / (spec.ripe[1] - spec.ripe[0])) : 0;
+      A.riceMat.color.set("#6cc24a").lerp(new THREE.Color("#e2b93f"), rk);
+    }
     if (spec.type === "sign" && spec.params?.text?.includes("{pop}")) {
       const txt = spec.params.text.replace("{pop}", populationAt(t).toLocaleString("id-ID"));
       if (obj.userData.last !== txt) { obj.userData.tex.draw(txt.split("\n")); obj.userData.last = txt; }
@@ -235,6 +244,7 @@ function makeActor(a) {
     case "soldier": return A.person({ soldier: true, shirt: "#5b6b7a", pants: "#3b4652", skin: a.skin });
     case "crowd": return makeCrowd(a);
     case "dragon": return A.dragon();
+    case "buffalo": return A.buffalo();
     case "cart": return A.cart();
     default: throw new Error("unknown actor " + a.type);
   }
@@ -297,6 +307,12 @@ function poseActor(entry, a, t, shot) {
     obj.userData.wheels.forEach(w => { w.rotation.x = moving ? -mk * 30 : 0; });
     return;
   }
+  if (entry.type === "buffalo") {
+    const s2 = moving ? Math.sin(ph * 6) * 0.45 : 0;
+    P.legFL.rotation.x = s2; P.legBR.rotation.x = s2; P.legFR.rotation.x = -s2; P.legBL.rotation.x = -s2;
+    P.head.rotation.x = moving ? 0.1 : 0.15 + 0.08 * Math.sin(ph * 1.3);
+    return;
+  }
   if (entry.type === "dragon") {
     const R = P.root;
     R.position.set(0, 0, 0); R.rotation.set(0, 0, 0); P.head.rotation.set(0, 0, 0);
@@ -345,6 +361,15 @@ function poseActor(entry, a, t, shot) {
     const k = 0.5 + 0.5 * Math.sin(ph * 3.3);
     P.head.rotation.x += 0.06 * Math.sin(ph * 7); P.head.rotation.y = 0.1 * Math.sin(ph * 1.3);
     P.armR.rotation.x = -0.7 - 0.35 * k; P.armR.rotation.z = -0.25;
+  }
+  if (an === "plant") {
+    P.body.rotation.x = 0.65; P.head.rotation.x = 0.3;
+    P.armR.rotation.x = -1.0 - 0.45 * Math.max(0, Math.sin(ph * 4)); P.armL.rotation.x = -0.6;
+    P.legL.rotation.x = -0.25; P.legR.rotation.x = 0.15;
+  }
+  if (an === "stuck") {
+    P.armL.rotation.z = 1.2 + 0.4 * Math.sin(ph * 6); P.armR.rotation.z = -1.2 - 0.4 * Math.sin(ph * 6 + 1);
+    P.body.rotation.z = 0.12 * Math.sin(ph * 3); P.head.rotation.z = 0.1 * Math.sin(ph * 3 + 0.5);
   }
   if (an === "sigh") { P.head.rotation.x = 0.25; P.body.rotation.x = 0.06; }
   if (an === "lookup") { P.head.rotation.x = -0.35; }
@@ -427,6 +452,8 @@ function updateActors(t, shot) {
     if (!e) { const obj = makeActor(a); scene.add(obj); e = { obj, type: a.type }; actors.set(a.id, e); }
     e.obj.visible = true;
     e.obj.scale.setScalar(a.scale || 1);
+    if (a.name && !e.tag) { e.tag = A.nameTag(a.name, a.title); e.tag.position.y = a.tagY || 2.55; e.obj.add(e.tag); }
+    if (e.tag) e.tag.visible = !!a.name;
     seen.add(a.id);
     if (e.type === "crowd") { e.obj.scale.setScalar(1); poseCrowd(e, a, t, shot); } else poseActor(e, a, t, shot);
   }
