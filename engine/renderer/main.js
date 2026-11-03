@@ -434,7 +434,7 @@ function poseCrowd(e, a, t, shot) {
       const sites = a.sites || [[0, 0, 3]];
       const [sx, sz, sr] = sites[i % sites.length];
       const pts = [0, 1, 2, 3].map(k => { const ang = (r0 + k * 0.27 + r2 * 0.1) * Math.PI * 2; const rr = sr + r1 * 1.4; return [sx + Math.cos(ang) * rr, sz + Math.sin(ang) * rr]; });
-      spec = { path: pts, dwell: 0.3, smooth: false, lookAt: [sx, sz], anim: r3 < 0.75 ? "hammer" : "talk", hammer: r3 < 0.75, phase: r4 * 10 };
+      spec = { path: pts, dwell: 0.3, smooth: false, lookAt: [sx, sz], anim: a.workAnim || (r3 < 0.75 ? "hammer" : "talk"), hammer: !a.workAnim && r3 < 0.75, phase: r4 * 10 };
     } else if (a.mode === "cheer") {
       spec = { at: target, lookAt: a.lookAt, anim: r3 < 0.6 ? "wave" : "raise", phase: r4 * 10 };
     } else {
@@ -452,7 +452,9 @@ function updateActors(t, shot) {
     if (!e) { const obj = makeActor(a); scene.add(obj); e = { obj, type: a.type }; actors.set(a.id, e); }
     e.obj.visible = true;
     e.obj.scale.setScalar(a.scale || 1);
-    if (a.name && !e.tag) { e.tag = A.nameTag(a.name, a.title); e.tag.position.y = a.tagY || 2.55; e.obj.add(e.tag); }
+    const tagKey = a.name ? a.name + "|" + (a.title || "") : null;
+    if (e.tag && e.tagKey !== tagKey) { e.obj.remove(e.tag); e.tag = null; }
+    if (tagKey && !e.tag) { e.tag = A.nameTag(a.name, a.title); e.tag.position.y = a.tagY || 2.55; e.obj.add(e.tag); e.tagKey = tagKey; }
     if (e.tag) e.tag.visible = !!a.name;
     seen.add(a.id);
     if (e.type === "crowd") { e.obj.scale.setScalar(1); poseCrowd(e, a, t, shot); } else poseActor(e, a, t, shot);

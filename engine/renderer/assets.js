@@ -516,7 +516,7 @@ export function scarecrow() {
 
 export function buffalo() {
   const g = new THREE.Group(), parts = {};
-  const hide = "#4f4a57";
+  const hide = "#77707f";
   g.add(at(mesh(new THREE.BoxGeometry(0.9, 0.75, 1.6), hide), 0, 0.95, 0));
   const head = new THREE.Group(); head.position.set(0, 1.05, 0.95); g.add(head); parts.head = head;
   head.add(mesh(new THREE.BoxGeometry(0.5, 0.45, 0.6), hide));
@@ -546,6 +546,6 @@ export function nameTag(text, sub, color = "#ffd23f") {
   if (sub) { x.fillStyle = "#ffffff"; x.font = "800 46px Nunito"; x.fillText(sub, w / 2, 150); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false }));
-  s.scale.set(1.6, 1.6 * c.height / c.width, 1); s.renderOrder = 10;
+  s.scale.set(1.2, 1.2 * c.height / c.width, 1); s.renderOrder = 10;
   return s;
 }
