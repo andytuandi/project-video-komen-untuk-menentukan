@@ -272,7 +272,7 @@ export function person(o = {}) {
     body.add(at(mesh(new THREE.CylinderGeometry(0.43, 0.43, 0.07, 8), "#f1c40f"), 0, 0.5, 0));
     body.add(at(mesh(new THREE.BoxGeometry(0.07, 0.62, 0.05), "#f1c40f"), 0, 0.84, 0.36));
     body.add(rx(at(mesh(new THREE.TorusGeometry(0.3, 0.06, 5, 10), "#f6f1e6"), 0, 1.18, 0), Math.PI / 2));
-    const cape = mesh(new THREE.BoxGeometry(0.78, 1.05, 0.05), "#b0212b");
+    const cape = mesh(new THREE.BoxGeometry(0.78, 1.05, 0.05), o.cape || "#b0212b");
     cape.position.set(0, 0.68, -0.3); cape.rotation.x = 0.12; body.add(cape); parts.cape = cape;
   } else {
     body.add(at(mesh(new THREE.BoxGeometry(0.52, 0.64, 0.36), o.shirt || "#6aa7d8"), 0, 0.82, 0));
@@ -300,7 +300,7 @@ export function person(o = {}) {
     crown.add(at(mesh(new THREE.OctahedronGeometry(0.05, 0), "#e74c3c", { emissive: "#e74c3c", emissiveIntensity: 0.4 }), 0, 0.02, 0.26));
     crown.rotation.z = 0.08;
     head.add(crown); parts.crown = crown;
-    head.add(rx(at(mesh(new THREE.ConeGeometry(0.1, 0.18, 5), "#2b1d14"), 0, -0.28, 0.27), Math.PI));
+    if (o.mustache !== false && o.beard !== false) head.add(rx(at(mesh(new THREE.ConeGeometry(0.1, 0.18, 5), "#2b1d14"), 0, -0.28, 0.27), Math.PI));
   }
   if (o.hair === "bun") {
     head.add(at(mesh(new THREE.SphereGeometry(0.4, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2.2), o.hairColor || "#2b1d14"), 0, 0.02, -0.02));

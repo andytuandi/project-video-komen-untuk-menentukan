@@ -239,7 +239,7 @@ function updateProps(t, hour, night) {
 // ------------------------------------------------------------------ actors
 function makeActor(a) {
   switch (a.type) {
-    case "king": return A.person({ king: true, shirt: "#6b2fa0" });
+    case "king": return A.person({ king: true, shirt: "#6b2fa0", ...(TL.leader || {}) });
     case "villager": return A.person({ shirt: a.shirt || "#6aa7d8", hat: a.hat, mustache: a.mustache, hair: a.hair, hijab: a.hijab, skin: a.skin });
     case "soldier": return A.person({ soldier: true, shirt: "#5b6b7a", pants: "#3b4652", skin: a.skin });
     case "crowd": return makeCrowd(a);

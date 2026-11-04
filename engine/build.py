@@ -175,7 +175,7 @@ def build_timeline(ep, cache_dir):
         "population": ep.get("population", 1), "popKeys": pop_keys, "seed": ep.get("seed", 7),
         "shots": shots, "beats": beats, "captions": captions, "clock": clock, "popups": popups,
         "fades": fades, "endCard": end_card, "props": props, "cover": ep.get("cover"),
-        "sfx": sfx, "musicSections": music, "plazas": ep.get("plazas", []), "reserved": ep.get("reserved", []),
+        "sfx": sfx, "musicSections": music, "plazas": ep.get("plazas", []), "leader": ep.get("leader", {}), "reserved": ep.get("reserved", []),
     }
     return tl, clips
 

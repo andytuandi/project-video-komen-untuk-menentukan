@@ -1,0 +1,157 @@
+{
+  "series": "Tes Studio",
+  "day": 0,
+  "handle": "@akunkamu",
+  "ui": {
+    "day": "DAY",
+    "popBadge": true
+  },
+  "population": 1,
+  "voices": {
+    "raja": {
+      "voice": "id-ID-ArdiNeural",
+      "rate": "+8%",
+      "pitch": "-4Hz",
+      "fx": "royal"
+    }
+  },
+  "gap": 0.2,
+  "props": [
+    {
+      "id": "gate",
+      "type": "gate",
+      "at": [
+        0,
+        18
+      ],
+      "params": {
+        "title": "STUDIO SIAP!"
+      }
+    },
+    {
+      "id": "tent",
+      "type": "tent",
+      "at": [
+        -5.5,
+        -6
+      ],
+      "rot": 25
+    }
+  ],
+  "beats": [
+    {
+      "say": "Halo! Studio animasimu sudah siap.",
+      "clock": "09:00",
+      "pre": 0.2,
+      "sfx": [
+        [
+          "fanfare",
+          0.02
+        ]
+      ],
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              0,
+              30,
+              50
+            ],
+            "look": [
+              0,
+              2,
+              14
+            ]
+          },
+          "to": {
+            "pos": [
+              2.4,
+              2.4,
+              9.5
+            ],
+            "look": [
+              0,
+              1.7,
+              15
+            ]
+          }
+        },
+        "actors": [
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              0,
+              15
+            ],
+            "face": 180,
+            "anim": "wave"
+          }
+        ]
+      }
+    },
+    {
+      "say": "Sekarang, ceritakan duniamu ke Claude.",
+      "pause": 0.8,
+      "popup": {
+        "text": "STUDIO SIAP!",
+        "icon": "crown",
+        "at": 0.1,
+        "color": "#2a9d8f"
+      },
+      "shot": {
+        "cam": {
+          "from": {
+            "pos": [
+              0.4,
+              2.2,
+              8.4
+            ],
+            "look": [
+              0.3,
+              1.3,
+              15
+            ],
+            "fov": 42
+          },
+          "to": {
+            "pos": [
+              0.4,
+              2.15,
+              9.0
+            ],
+            "look": [
+              0.3,
+              1.35,
+              15
+            ],
+            "fov": 40
+          }
+        },
+        "actors": [
+          {
+            "id": "king",
+            "type": "king",
+            "at": [
+              0,
+              15
+            ],
+            "face": 180,
+            "anim": "present",
+            "talk": true
+          },
+          {
+            "id": "naga",
+            "type": "dragon",
+            "at": [
+              0.75,
+              14.4
+            ],
+            "face": 200,
+            "anim": "hop"
+          }
+        ]
+      }
+    }
+  ]
+}

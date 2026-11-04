@@ -1,0 +1,19 @@
+IDE NAMA KERAJAAN (pilih satu atau bikin sendiri)
+- Kerajaan Rebahan       - Kerajaan Mager          - Kerajaan Gorengan
+- Kerajaan Kopi Susu     - Kerajaan Wibu           - Kerajaan Nusantara Netizen
+- Kerajaan Receh         - Kerajaan Santuy         - Kerajaan Anak Kos
+- Kerajaan Tanggal Tua   - Kerajaan Mie Instan     - Kerajaan Healing
+
+IDE HEWAN PELIHARAAN
+- Naga kecil bernama Gosong / Kompor / Arang / Sambal / Cabe
+- (Claude bisa membuatkan hewan baru kalau kamu minta, misalnya kucing, kambing, atau ayam)
+
+IDE USULAN YANG SERING MUNCUL DI KOMENTAR (Claude bisa membangunnya)
+Rumah rakyat · pasar · istana · sekolah · sumur · jembatan · kandang ayam · kebun · lapangan bola ·
+perpustakaan · rumah sakit · pelabuhan · menara sihir · kolam ikan · warung kopi · taman bunga
+
+IDE LELUCON YANG BISA DIULANG (running gag)
+- Hewannya "tidak dihitung, belum punya KTP"
+- Raja selalu mengerjakan semuanya sendiri
+- Istananya tidak pernah jadi
+- Raja selalu gagal saat mencoba ikut membantu (nyangkut, jatuh, ketiduran)

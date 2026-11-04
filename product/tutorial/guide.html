@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Studio Animasi Netizen — Mulai di Sini</title>
+<style>
+  @font-face { font-family: "Nunito"; src: url("../studio-animasi-netizen/assets/fonts/Nunito.ttf"); font-weight: 200 1000; }
+  @font-face { font-family: "Fredoka"; src: url("../studio-animasi-netizen/assets/fonts/Fredoka.ttf"); font-weight: 300 700; }
+  @page { size: A4; margin: 14mm 14mm 16mm 14mm; }
+  :root { --ink: #1d1b3a; --muted: #5c5f73; --gold: #ffc93c; --red: #e63946; --green: #2a9d8f; --blue: #3a7bd5;
+          --soft: #f6f4ff; --line: #e3e0f2; --purple: #5b3fd1; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: "Nunito", sans-serif; color: var(--ink); font-size: 11.2pt; line-height: 1.45; }
+  h1, h2, h3 { font-family: "Fredoka"; font-weight: 700; line-height: 1.15; margin: 0 0 8px; }
+  h2 { font-size: 22pt; } h3 { font-size: 15pt; margin-top: 10px; }
+  p { margin: 5px 0 9px; }
+  b { font-weight: 900; }
+  .page { break-after: page; } .page:last-child { break-after: auto; }
+  .keep { break-inside: avoid; }
+  /* cover */
+  .cover { background: radial-gradient(circle at 50% 30%, #3a2d6b, #14122b 70%); color: #fff; margin: -14mm -14mm 0;
+           padding: 16mm 16mm 12mm; min-height: 297mm; text-align: center; position: relative; }
+  .cover .tag { display: inline-block; background: var(--red); font-family: "Fredoka"; padding: 6px 16px; border-radius: 30px; font-size: 13pt; letter-spacing: 1px; }
+  .cover h1 { font-size: 46pt; color: var(--gold); margin: 14px 0 4px; letter-spacing: 1px; }
+  .cover .sub { font-size: 16pt; font-weight: 800; max-width: 165mm; margin: 0 auto; }
+  .cover .strip { display: flex; gap: 3mm; justify-content: center; margin: 10mm 0 8mm; }
+  .cover .strip img { width: 28mm; height: 50mm; object-fit: cover; border-radius: 3mm; border: 2px solid #fff3; }
+  .cover .logo { width: 52mm; margin-top: 2mm; }
+  .cover .pills { display: flex; flex-wrap: wrap; gap: 3mm; justify-content: center; margin-top: 4mm; }
+  .cover .pills span { background: #ffffff1a; border: 1px solid #ffffff33; border-radius: 20px; padding: 4px 12px; font-weight: 800; font-size: 11pt; }
+  .cover .foot { position: absolute; left: 16mm; right: 16mm; bottom: 10mm; color: #b9b4d8; font-size: 10pt; }
+  /* boxes */
+  .box { border-radius: 14px; padding: 10px 14px; margin: 10px 0; background: var(--soft); border: 2px solid var(--line); break-inside: avoid; }
+  .ok { background: #eafaf4; border-color: #9fe3c9; } .warn { background: #fff6e5; border-color: #ffd58a; } .bad { background: #ffeef0; border-color: #ffb3bb; }
+  .box .lbl { font-family: "Fredoka"; font-size: 12pt; display: block; margin-bottom: 2px; }
+  .ok .lbl { color: #157a5f; } .warn .lbl { color: #b06a00; } .bad .lbl { color: #c1121f; }
+  .part { background: var(--purple); color: #fff; border-radius: 18px; padding: 14px 18px; margin: 0 0 12px; break-after: avoid; }
+  .part .k { font-family: "Fredoka"; color: var(--gold); font-size: 12pt; letter-spacing: 1px; }
+  .part h2 { color: #fff; margin: 2px 0 0; }
+  /* steps */
+  .step { display: grid; grid-template-columns: 17mm 1fr; gap: 4mm; margin: 6px 0 12px; break-inside: avoid; }
+  .num { width: 15mm; height: 15mm; border-radius: 50%; background: var(--gold); color: var(--ink); font-family: "Fredoka"; font-size: 22pt;
+         display: flex; align-items: center; justify-content: center; border: 3px solid var(--ink); }
+  .step h3 { margin-top: 2mm; }
+  .step ol { margin: 4px 0 6px; padding-left: 20px; } .step li { margin: 3px 0; }
+  .btn { display: inline-block; font-weight: 900; font-size: 11pt; background: #fff; border: 2px solid #8a87a6; border-bottom-width: 4px; border-radius: 8px; padding: 0 8px; white-space: nowrap; }
+  .btn.green { background: #2da44e; color: #fff; border-color: #1f7a39; } .btn.dark { background: #1d1b3a; color: #fff; border-color: #000; }
+  .web { font-weight: 900; color: var(--blue); }
+  .file { font-weight: 900; background: #eef0ff; border-radius: 6px; padding: 0 6px; font-family: "Nunito"; }
+  .prompt { font-family: "DejaVu Sans Mono", monospace; font-size: 10pt; background: #14122b; color: #e8ffd6; border-radius: 12px; padding: 10px 14px; white-space: pre-wrap; margin: 8px 0 10px; break-inside: avoid; }
+  /* mock screens */
+  .screen { border: 2px solid #c9c6de; border-radius: 12px; overflow: hidden; margin: 8px 0 10px; background: #fff; break-inside: avoid; }
+  .screen .bar { background: #ecebf5; padding: 5px 10px; font-size: 9.5pt; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .screen .bar i { width: 9px; height: 9px; border-radius: 50%; background: #c9c6de; display: inline-block; }
+  .screen .body { padding: 10px 14px; font-size: 10.5pt; }
+  .screen .hl { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 8px; }
+  .arrow { color: var(--red); font-weight: 900; }
+  .field { display: inline-block; border: 1.5px solid #c9c6de; border-radius: 6px; padding: 1px 8px; min-width: 40mm; background: #fafaff; }
+  /* layout */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+  .card { background: var(--soft); border: 2px solid var(--line); border-radius: 14px; padding: 7px 9px; text-align: center; break-inside: avoid; }
+  .card .em { font-size: 20pt; line-height: 1.1; }
+  .card b { display: block; font-family: "Fredoka"; font-size: 13pt; font-weight: 700; }
+  .flow { display: flex; gap: 2mm; align-items: stretch; margin: 8px 0; }
+  .flow .c { flex: 1; background: var(--soft); border: 2px solid var(--line); border-radius: 12px; padding: 8px 6px; text-align: center; font-size: 10.5pt; }
+  .flow .c .em { font-size: 20pt; display: block; }
+  .flow .ar { align-self: center; font-size: 18pt; color: var(--purple); font-weight: 900; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 11pt; break-inside: avoid; }
+  th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 2px solid var(--line); }
+  th { background: var(--ink); color: #fff; font-family: "Fredoka"; font-weight: 600; }
+  img.full { width: 100%; border-radius: 10px; border: 2px solid var(--line); }
+  .check { list-style: none; padding-left: 0; } .check li { padding-left: 30px; position: relative; margin: 8px 0; }
+  .check li::before { content: ""; position: absolute; left: 0; top: 2px; width: 18px; height: 18px; border: 3px solid var(--ink); border-radius: 5px; }
+  .muted { color: var(--muted); } .small { font-size: 10pt; }
+  .bubble { background: #fff; border: 2px solid var(--line); border-radius: 16px 16px 16px 4px; padding: 8px 12px; margin: 6px 0; display: inline-block; }
+  .bubble.me { background: #e9e4ff; border-radius: 16px 16px 4px 16px; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================== COVER -->
+<section class="page cover">
+  <span class="tag">MULAI DI SINI 👋</span>
+  <h1>STUDIO ANIMASI NETIZEN</h1>
+  <p class="sub">Bikin video animasi 3D yang ceritanya diatur penonton.<br>Cukup ngobrol sama AI. Tanpa bisa edit video. Tanpa coding.</p>
+  <div class="strip">
+    <img src="img/contoh1.jpg"><img src="img/contoh2.jpg"><img src="img/contoh3.jpg"><img src="img/contoh4.jpg"><img src="img/contoh5.jpg"><img src="img/contoh6.jpg">
+  </div>
+  <div class="pills">
+    <span>👑 Kerajaan buatanmu sendiri</span><span>👥 Follow = jadi rakyat</span><span>💬 Komen = dibangun besok</span>
+    <span>🎙️ Ada suara + teks + musik</span><span>📱 Siap posting Reels</span>
+  </div>
+  <img class="logo" src="img/logo-contoh.png">
+  <div class="foot">Gambar di atas adalah contoh hasil dari studio ini. Kerajaan, nama, dan ceritamu nanti milikmu sendiri.</div>
+</section>
+
+<!-- ======================================================== KENALAN -->
+<section class="page">
+  <h2>Kenalan dulu, yuk! 🤝</h2>
+  <p>Bayangkan kamu punya <b>teman yang jago sekali bikin film kartun</b>. Kamu cukup bilang
+  <i>"Tolong bikinkan video kerajaanku hari ke-2, rakyatnya mau sawah"</i>, lalu temanmu itu yang menggambar,
+  menggerakkan tokoh, mengisi suara, menulis teks, dan memberi musik. Kamu tinggal terima videonya dan posting. 🎬</p>
+  <p>Teman itu namanya <b>Claude</b> (sebuah AI). Paket ini adalah <b>"studio"</b> yang membuat Claude bisa membuat video seperti itu.</p>
+
+  <h3>4 kata yang perlu kamu tahu (cuma 4!)</h3>
+  <div class="two">
+    <div class="card"><div class="em">📦</div><b>File ZIP</b>Seperti <b>kardus</b> berisi studio. Kamu buka kardusnya sekali saja.</div>
+    <div class="card"><div class="em">🗄️</div><b>GitHub</b>Seperti <b>lemari online</b> (gratis). Studiomu disimpan di sini, juga semua videomu.</div>
+    <div class="card"><div class="em">🤖</div><b>Claude</b>Teman AI yang <b>membuka lemari itu</b> dan membuatkan video untukmu.</div>
+    <div class="card"><div class="em">✉️</div><b>Prompt</b>Pesan yang kamu <b>salin lalu kirim</b> ke Claude. Sudah disiapkan semua, tinggal salin.</div>
+  </div>
+
+  <h3>Cara kerjanya</h3>
+  <div class="flow">
+    <div class="c"><span class="em">📦</span>Buka kardus (ZIP)</div><div class="ar">→</div>
+    <div class="c"><span class="em">🗄️</span>Masukkan ke lemari (GitHub)</div><div class="ar">→</div>
+    <div class="c"><span class="em">🤖</span>Claude bikin video</div><div class="ar">→</div>
+    <div class="c"><span class="em">📱</span>Kamu posting</div>
+  </div>
+  <div class="box ok"><span class="lbl">😊 Kabar baik</span>Bagian yang agak panjang (Bagian 1) <b>cuma dilakukan sekali</b>, kira-kira 30 menit.
+  Setelah itu, setiap video baru cukup <b>1 pesan</b> ke Claude.</div>
+
+  <h3>Yang kamu butuhkan</h3>
+  <ul class="check">
+    <li><b>Langganan Claude berbayar (Pro atau Max)</b> dari <span class="web">claude.ai</span>. Versi gratis tidak bisa. Pro sudah cukup.</li>
+    <li><b>Akun GitHub</b>. Gratis, kita buat bersama di Langkah 2.</li>
+    <li><b>Laptop atau komputer</b> dengan Chrome untuk persiapan pertama. Setelah itu bisa pakai HP.</li>
+    <li><b>Akun Instagram</b> untuk posting videonya.</li>
+  </ul>
+
+
+</section>
+
+<!-- ======================================================== BAGIAN 1 -->
+<section class="page">
+  <div class="part"><span class="k">BAGIAN 1 · CUKUP SEKALI SEUMUR HIDUP</span><h2>Siapkan studiomu 🛠️</h2></div>
+  <h3 style="margin-top:0">Isi kardusmu 📦</h3>
+  <table>
+    <tr><th>Nama file</th><th>Apa itu?</th></tr>
+    <tr><td class="file">MULAI DI SINI.pdf</td><td>Buku panduan ini 📖</td></tr>
+    <tr><td class="file">Studio-Animasi-Netizen.zip</td><td>Kardus studionya. Kamu tidak perlu membuka file-file di dalamnya, kecuali folder <span class="file">prompts</span>.</td></tr>
+  </table>
+
+  <div class="step"><div class="num">1</div><div>
+    <h3>Buka kardusnya (ekstrak ZIP)</h3>
+    <ol>
+      <li>Cari file <span class="file">Studio-Animasi-Netizen.zip</span> di folder <b>Download</b> laptopmu.</li>
+      <li><b>Windows:</b> klik kanan file itu → pilih <span class="btn">Extract All…</span> → klik <span class="btn">Extract</span>.<br>
+          <b>Mac:</b> klik dua kali file itu.</li>
+      <li>Sekarang ada <b>folder</b> bernama <span class="file">Studio-Animasi-Netizen</span>. Buka folder itu.</li>
+    </ol>
+    <div class="box ok"><span class="lbl">✅ Berhasil kalau…</span>di dalam folder kamu melihat <span class="file">CLAUDE.md</span>, <span class="file">README.md</span>, dan folder-folder seperti <span class="file">prompts</span>, <span class="file">engine</span>, <span class="file">docs</span>.</div>
+  </div></div>
+
+  <div class="step"><div class="num">2</div><div>
+    <h3>Buat akun GitHub (lemari online gratis)</h3>
+    <ol>
+      <li>Buka <span class="web">github.com</span> lalu klik <span class="btn">Sign up</span>.</li>
+      <li>Isi <b>email</b>, <b>password</b>, dan <b>username</b> (nama bebas, contoh: <i>budistudio</i>).</li>
+      <li>GitHub mengirim <b>kode</b> ke emailmu. Buka emailmu, lalu ketik kodenya.</li>
+      <li>Kalau ditanya macam-macam (mau dipakai untuk apa, dll.), pilih apa saja atau lewati. Pakai yang <b>gratis (Free)</b>.</li>
+    </ol>
+    <div class="box ok"><span class="lbl">💡 Sudah punya akun GitHub?</span>Cukup masuk (Sign in), lalu lanjut ke Langkah 3.</div>
+  </div></div>
+
+</section>
+<section class="page">
+  <div class="step"><div class="num">3</div><div>
+    <h3>Buat "laci" untuk studiomu (repository)</h3>
+    <ol>
+      <li>Di <span class="web">github.com</span>, klik tanda <span class="btn">+</span> di pojok kanan atas → pilih <span class="btn">New repository</span>.</li>
+      <li>Di kotak <b>Repository name</b>, ketik: <span class="file">studio-animasi</span></li>
+      <li>Pilih <b>Private</b> (supaya hanya kamu yang bisa melihat).</li>
+      <li>Nyalakan <b>Add README</b> (di tampilan lama: centang <i>Add a README file</i>).</li>
+      <li>Klik tombol hijau <span class="btn green">Create repository</span>.</li>
+    </ol>
+    <div class="screen"><div class="bar"><i></i><i></i><i></i> github.com/new</div><div class="body">
+      <b>Create a new repository</b><br>
+      Repository name: <span class="field">studio-animasi</span><br>
+      ◯ Public &nbsp; <span class="hl">◉ Private</span><br>
+      <span class="hl">☑ Add README</span><br><br>
+      <span class="btn green hl">Create repository</span> <span class="arrow">← klik</span>
+    </div></div>
+  </div></div>
+
+  <div class="step"><div class="num">4</div><div>
+    <h3>Masukkan isi kardus ke laci (upload)</h3>
+    <ol>
+      <li>Di laci barumu (<span class="file">studio-animasi</span>), klik <span class="btn">Add file</span> → <span class="btn">Upload files</span>.</li>
+      <li>Buka folder <span class="file">Studio-Animasi-Netizen</span> di laptopmu. Klik satu file, lalu tekan
+          <b>Ctrl + A</b> (Windows) atau <b>Cmd + A</b> (Mac) supaya <b>semua</b> terpilih.</li>
+      <li><b>Seret (drag)</b> semua yang terpilih ke kotak upload di Chrome. Tunggu sampai semua nama file muncul di daftar.</li>
+      <li>Gulir ke bawah, klik tombol hijau <span class="btn green">Commit changes</span>. ("Commit" artinya <b>simpan</b>.)</li>
+    </ol>
+    <div class="screen"><div class="bar"><i></i><i></i><i></i> github.com/…/studio-animasi/upload</div><div class="body" style="text-align:center">
+      <div style="border:3px dashed #b9b4d8; border-radius:12px; padding:14px;">📂 ➜ <b>Seret semua file & folder ke sini</b></div><br>
+      <span class="btn green hl">Commit changes</span> <span class="arrow">← klik setelah semua muncul</span>
+    </div></div>
+    <div class="box ok"><span class="lbl">✅ Berhasil kalau…</span>halaman lacimu sekarang menampilkan <span class="file">CLAUDE.md</span>, <span class="file">prompts</span>, <span class="file">engine</span>, … langsung di daftar.</div>
+    <div class="box warn"><span class="lbl">⚠️ Yang sering terjadi</span>Kalau yang terupload malah <b>satu folder</b> bernama <span class="file">Studio-Animasi-Netizen</span>, <b>tidak apa-apa</b>. Nanti Claude yang merapikannya sendiri.</div>
+  </div></div>
+
+</section>
+<section class="page">
+  <div class="step"><div class="num">5</div><div>
+    <h3>Kenalkan Claude dengan lemarimu (hubungkan GitHub)</h3>
+    <ol>
+      <li>Buka <span class="web">claude.ai/code</span> dan masuk dengan akun Claude berbayarmu.</li>
+      <li>Claude akan meminta kamu menghubungkan GitHub. Klik tombolnya (bisa bertuliskan <span class="btn">Connect GitHub</span>
+          atau <span class="btn">Sign in with GitHub</span>), lalu klik setuju (<span class="btn green">Authorize</span>) di halaman GitHub yang terbuka.</li>
+      <li>Karena lacimu <b>Private</b>, Claude perlu izin khusus. Kalau Claude menawarkan memasang <b>Claude GitHub App</b>, terima.
+          Kalau tidak ditawarkan: buka <span class="web">github.com/apps/claude</span> → <span class="btn">Install</span> (atau <span class="btn">Configure</span>)
+          → pilih akunmu → <b>Only select repositories</b> → pilih <span class="file">studio-animasi</span> → <span class="btn green">Install</span>.</li>
+    </ol>
+    <div class="box ok"><span class="lbl">💡 Tips</span>Kalau nanti lacimu tidak muncul di Claude, 99% masalahnya di langkah ini: pastikan Claude GitHub App diizinkan untuk <span class="file">studio-animasi</span>.</div>
+  </div></div>
+
+  <div class="step"><div class="num">6</div><div>
+    <h3>Buka pintu internet (supaya ada suara)</h3>
+    <p>Komputer Claude di internet awalnya hanya boleh membuka sedikit situs. Suara narator butuh situs tambahan, jadi kita buka pintunya:</p>
+    <ol>
+      <li>Di halaman <span class="web">claude.ai/code</span>, lihat di <b>bawah kotak pesan</b>: ada tulisan nama environment (biasanya <b>Default</b>).</li>
+      <li>Klik itu, lalu pilih <b>edit</b> (ikon pensil / pengaturan) pada <b>Default</b>.</li>
+      <li>Cari <b>Network access</b> → pilih <b>Full</b>.</li>
+      <li>Klik <span class="btn dark">Save changes</span>.</li>
+    </ol>
+    <div class="screen"><div class="bar"><i></i><i></i><i></i> Edit environment</div><div class="body">
+      Name: <span class="field">Default</span><br>
+      Network access: ◯ None &nbsp; ◯ Trusted &nbsp; <span class="hl">◉ Full</span> &nbsp; ◯ Custom<br><br>
+      <span class="btn dark hl">Save changes</span>
+    </div></div>
+    <div class="box ok"><span class="lbl">🎉 Selesai!</span>Bagian paling panjang sudah lewat. Kamu tidak perlu mengulang Bagian 1 lagi.</div>
+  </div></div>
+</section>
+
+<!-- ======================================================== BAGIAN 2 -->
+<section class="page">
+  <div class="part"><span class="k">BAGIAN 2</span><h2>Video pertamamu 🎬</h2></div>
+
+  <div class="step"><div class="num">7</div><div>
+    <h3>Mulai ngobrol dengan Claude</h3>
+    <ol>
+      <li>Di <span class="web">claude.ai/code</span>, klik pilihan <b>repository</b> di bawah kotak pesan → pilih <span class="file">studio-animasi</span>.</li>
+      <li>Biarkan pilihan di sebelahnya tetap <b>main</b>, dan environment tetap <b>Default</b> (yang tadi kamu buat Full).</li>
+      <li>Kalau ada pilihan mode, pilih <b>Auto</b>. Kalau tidak ada Auto, pilih <b>Accept edits</b>. <b>Jangan</b> pilih Plan.</li>
+    </ol>
+  </div></div>
+
+  <div class="step"><div class="num">8</div><div>
+    <h3>Kirim pesan pertama</h3>
+    <p>Buka file <span class="file">prompts/1_MULAI.txt</span> (di laptop atau di GitHub), salin tulisannya, tempel di kotak pesan Claude, lalu kirim:</p>
+    <div class="prompt">Halo Claude! Ini proyek Studio Animasi Netizen milikku. Tolong ikuti petunjuk di file CLAUDE.md:
+cek semuanya berjalan dan buatkan video tes yang pendek, lalu bantu aku membuat dunia animasiku yang pertama.
+Aku tidak mengerti teknis, jadi tolong kerjakan semua langkah teknis untukku dan balas dengan kalimat yang singkat dan mudah.
+Kamu boleh menyimpan semuanya langsung ke branch main di proyek GitHub-ku.</div>
+    <p>Claude akan memasang semuanya sendiri (2–6 menit), lalu mengirim <b>video tes 8 detik</b>. Kalau kamu dengar raja berkata
+    <i>"Halo! Studio animasimu sudah siap"</i>, berarti <b>studiomu sudah jadi</b>. 🥳</p>
+    <div class="box bad"><span class="lbl">😟 Kalau Claude bilang "layanan suara tidak bisa dihubungi"</span>Langkah 6 belum tersimpan. Ulangi Langkah 6 (Network access = Full, Save), lalu ketik <b>coba lagi</b>.</div>
+  </div></div>
+
+</section>
+<section class="page">
+  <div class="step"><div class="num">9</div><div>
+    <h3>Ceritakan kerajaanmu</h3>
+    <p>Claude akan bertanya 3 hal. Jawab saja dengan kata-katamu sendiri. Contoh:</p>
+    <div class="bubble">🤖 Nama kerajaanmu apa? Akun Instagram-mu? Pemimpinnya Raja atau Ratu? Nama hewannya?</div><br>
+    <div class="bubble me">🙂 Kerajaan Rebahan. Akunku @kerajaanrebahan. Pemimpinnya Raja. Hewannya naga namanya Gosong.</div>
+    <p>Bingung? Balas saja <b>"terserah kamu"</b>. Ide-ide nama ada di <span class="file">prompts/6_IDE_TEMA.txt</span>.</p>
+    <p>Claude lalu membuat <b>Day 1</b> (kira-kira <b>15–30 menit</b>). Kamu boleh menutup halaman dan kembali nanti. Claude tetap bekerja.</p>
+  </div></div>
+
+  <div class="box ok"><span class="lbl">📥 Cara mengambil videonya</span>
+  <b>Dari chat:</b> Claude mengirim video + cover + caption. Klik videonya → unduh.<br>
+  <b>Dari GitHub:</b> <span class="web">github.com</span> → <span class="file">studio-animasi</span> → folder <span class="file">videos</span> → klik video → tombol unduh (panah ↓, kanan atas).<br>
+  <b>Di HP:</b> buka videonya → tombol <b>Bagikan / Simpan</b> → masuk galeri → posting ke Instagram.</div>
+
+  <h3>👀 Nanti obrolanmu kira-kira seperti ini</h3>
+  <div class="bubble me">🙂 (kamu menempel pesan 1_MULAI)</div><br>
+  <div class="bubble">🤖 Siap! Lagi aku cek dan pasang semuanya… ±5 menit.</div><br>
+  <div class="bubble">🤖 ✅ Studiomu sudah jalan! Ini video tesnya 🎬. Sekarang kasih tahu aku nama kerajaanmu, akun Instagram-mu, Raja atau Ratu, dan nama hewannya.</div><br>
+  <div class="bubble me">🙂 Kerajaan Rebahan, @kerajaanrebahan, Raja, naganya Gosong.</div><br>
+  <div class="bubble">🤖 Oke! Lagi bikin Day 1… ±20 menit.</div><br>
+  <div class="bubble">🤖 🎉 Day 1 sudah jadi! Ini video, cover, dan caption-nya. Kalau sudah ada komentar, kirim jumlah follower + komentar teratas untuk Day 2.</div>
+  <div class="box warn"><span class="lbl">⏳ Sabar ya</span>Selama Claude bekerja, kamu akan melihat banyak tulisan aneh lewat di layar. <b>Itu normal</b>, abaikan saja. Kamu cukup menunggu pesan dari Claude.</div>
+</section>
+
+<!-- ======================================================== BAGIAN 3 -->
+<section class="page">
+  <div class="part"><span class="k">BAGIAN 3 · SETIAP HARI</span><h2>Bikin Day berikutnya 🔁</h2></div>
+  <p>Inilah "rahasia" kontennya: <b>penonton yang menentukan isi videomu</b>. Setiap follower menjadi rakyat, dan komentar dengan like terbanyak dibangun besok.
+  Orang jadi semangat follow dan komen karena <b>namanya bisa muncul di video</b>.</p>
+  <div class="flow">
+    <div class="c"><span class="em">📱</span>Posting Day 1</div><div class="ar">→</div>
+    <div class="c"><span class="em">💬</span>Orang follow & komen</div><div class="ar">→</div>
+    <div class="c"><span class="em">📸</span>Kamu screenshot komentar teratas</div><div class="ar">→</div>
+    <div class="c"><span class="em">🤖</span>Kirim ke Claude</div><div class="ar">→</div>
+    <div class="c"><span class="em">🎬</span>Day 2 jadi!</div>
+  </div>
+
+  <div class="step"><div class="num">A</div><div>
+    <h3>Kumpulkan 2 hal dari Instagram</h3>
+    <ol>
+      <li><b>Jumlah follower</b>: lihat angka di profilmu (contoh: 581).</li>
+      <li><b>Komentar teratas</b>: buka video kemarin, lalu <b>screenshot</b> 3–5 komentar yang <b>like-nya paling banyak</b>.</li>
+    </ol>
+  </div></div>
+
+  <div class="step"><div class="num">B</div><div>
+    <h3>Kirim ke Claude</h3>
+    <p>Buka chatmu di <span class="web">claude.ai/code</span> (atau aplikasi Claude di HP → <b>Code</b>). Chat yang sama paling bagus.
+    Chat baru dengan <span class="file">studio-animasi</span> juga boleh, karena semuanya sudah tersimpan. Salin dari <span class="file">prompts/3_DAY_BERIKUTNYA.txt</span>,
+    ganti angkanya, lalu <b>lampirkan screenshot</b>-nya:</p>
+    <div class="prompt">Buatkan Day berikutnya untuk dunia Kerajaan Rebahan.
+Jumlah follower sekarang: 581
+Ini komentar teratasnya (screenshot terlampir). Bangun usulan dengan like terbanyak, dan sebutkan nama pengusulnya di video.
+Kamu boleh menyimpan semuanya langsung ke branch main.</div>
+    <p>Claude akan membuat papan "RAKYAT" naik ke 581, menampilkan <b>nama pengusul</b> dengan gelar <b>Penasihat Raja</b>,
+    membangun usulannya dalam timelapse, menambahkan lelucon, lalu mengajak orang follow dan komen lagi.</p>
+    <div class="box ok"><span class="lbl">💡 Usulan aneh-aneh?</span>Tenang. Kalau bangunan yang diminta belum ada di studio (misalnya "sekolah sihir"), Claude bisa <b>membuatkan bangunan baru</b> sendiri.</div>
+  </div></div>
+
+
+</section>
+
+<!-- ======================================================== BAGIAN 4 -->
+<section class="page">
+  <div class="part"><span class="k">BAGIAN 4</span><h2>Posting yang benar 📲</h2></div>
+  <h3 style="margin-top:0">🏆 Sistem pangkat (bikin orang makin semangat)</h3>
+  <table>
+    <tr><th>Pangkat</th><th>Caranya</th><th>Hadiah di video</th></tr>
+    <tr><td>👥 Rakyat</td><td>Follow</td><td>Ikut dihitung di papan RAKYAT</td></tr>
+    <tr><td>💬 Penasihat Raja</td><td>Komentar dengan like terbanyak</td><td>Usulannya dibangun + namanya muncul</td></tr>
+    <tr><td>🛡️ Prajurit</td><td>Kirim gift</td><td>Nama di papan "Daftar Prajurit"</td></tr>
+    <tr><td>⚔️ Ksatria / Panglima</td><td>Dukungan lewat link donasi</td><td>Prajurit bernama / bangunan pakai namanya</td></tr>
+  </table>
+  <table>
+    <tr><th>Lakukan ini</th><th>Kenapa?</th></tr>
+    <tr><td>Pakai <b>gambar cover</b> buatan Claude (<span class="file">videos/…-cover.jpg</span>)</td><td>Profilmu jadi rapi dan orang penasaran ingin klik.</td></tr>
+    <tr><td>Tempel <b>caption</b> buatan Claude (<span class="file">…caption.txt</span>)</td><td>Sudah ada ajakan follow, komen, dan hashtag.</td></tr>
+    <tr><td><b>Sematkan (pin)</b> komentar: "Komen usulanmu di sini 👇"</td><td>Orang langsung tahu harus komen apa.</td></tr>
+    <tr><td>Posting <b>setiap hari</b> di jam yang sama (11.00–13.00 atau 18.00–21.00)</td><td>Penonton menunggu kelanjutannya.</td></tr>
+    <tr><td>Nyalakan label <b>"Dibuat dengan AI"</b> di Instagram</td><td>Suaranya buatan AI. Instagram meminta label ini.</td></tr>
+  </table>
+  <div class="box"><span class="lbl">✍️ Bio Instagram (contoh, tinggal ganti)</span>
+    👑 Kerajaan ini dibangun dari komen<br>👥 Follow = jadi rakyat<br>💬 Usulan like terbanyak, besok dibangun<br>🎁 Gift = naik pangkat</div>
+  <div class="box ok"><span class="lbl">🎨 Logo & foto profil</span>Minta ke Claude: <b>"Bikinin logo untuk kerajaanku."</b> Kamu akan dapat logo bulat bermahkota + foto profil Instagram yang pas.</div>
+
+</section>
+<section class="page">
+  <div class="part"><span class="k">BAGIAN 5</span><h2>Mau ubah sesuatu? Bilang aja! 🗣️</h2></div>
+  <p>Kamu <b>tidak pernah</b> perlu mengubah file. Cukup ketik keinginanmu ke Claude. Contoh (lebih banyak di <span class="file">prompts/4_UBAH_SESUATU.txt</span>):</p>
+  <div class="prompt">Suara rajanya bikin lebih berat dan lebih pelan.
+Ganti pemimpinnya jadi Ratu, bajunya warna hijau.
+Videonya kepanjangan, bikin jadi sekitar 50 detik.
+Di detik ke-20 tulisannya menutupi muka raja, tolong perbaiki.
+Tambahkan lelucon: naganya takut sama ayam.
+Bikinin bio Instagram untuk akunku.</div>
+
+  <h3>Yang bisa ditampilkan studio ini</h3>
+  <img class="full" src="img/katalog-aset.jpg" style="max-height:120mm; object-fit:contain; background:#14122b">
+  <p class="small muted">Gerbang & papan nama, singgasana, tenda kerajaan, api unggun, masjid, gereja, pos jaga, sawah + saung, raja/ratu, rakyat (60 orang beragam),
+  prajurit, naga, kerbau, gerobak. Langit pagi–siang–sore–malam ikut jam di video. Bangunan baru bisa dibuatkan Claude.</p>
+</section>
+
+<!-- ======================================================== BANTUAN -->
+<section class="page">
+  <div class="part"><span class="k">BANTUAN</span><h2>Ada masalah? Tenang 😌</h2></div>
+  <p><b>Aturan emas:</b> ceritakan ke Claude apa yang kamu lihat, pakai kata-katamu sendiri. Claude bisa memperbaiki hampir semuanya.
+  Pesan siap salin ada di <span class="file">prompts/5_KALAU_ADA_MASALAH.txt</span>.</p>
+  <table>
+    <tr><th>Yang kamu lihat</th><th>Yang kamu lakukan</th></tr>
+    <tr><td>"Layanan suara tidak bisa dihubungi" / soal network</td><td>Langkah 6: Network access = <b>Full</b> → Save → ketik <b>coba lagi</b>.</td></tr>
+    <tr><td>Lacimu tidak muncul di Claude</td><td>Langkah 5: izinkan Claude GitHub App untuk <span class="file">studio-animasi</span>, lalu muat ulang halaman.</td></tr>
+    <tr><td>Claude minta upgrade / Code tidak tersedia</td><td>Kamu perlu langganan <b>Pro</b> atau <b>Max</b>.</td></tr>
+    <tr><td>"You've reached your usage limit"</td><td>Jatah pemakaianmu sedang habis. Tunggu sampai jam yang ditunjukkan, lalu ketik <b>lanjutkan</b>.</td></tr>
+    <tr><td>Claude berhenti di tengah</td><td>Ketik: <b>Lanjutkan dari yang tadi ya.</b></td></tr>
+    <tr><td>Videonya tidak ketemu</td><td>GitHub → <span class="file">studio-animasi</span> → <span class="file">videos</span>. Atau ketik: <b>Kirim ulang videonya.</b></td></tr>
+    <tr><td>Ada yang salah di video</td><td>Bilang detik dan masalahnya: <b>"Di detik 0:20 tulisannya menutupi muka raja."</b></td></tr>
+    <tr><td>Claude bilang ada yang "diblokir"/"ditolak"</td><td>Balas: <b>Aku izinkan. Silakan lanjut.</b></td></tr>
+    <tr><td>Claude bertanya hal teknis</td><td>Balas: <b>Aku tidak paham teknis, tolong kamu yang putuskan.</b></td></tr>
+  </table>
+
+  <h3>Pertanyaan yang sering ditanya</h3>
+  <div class="two small">
+  <div><p><b>Harus bisa coding atau edit video?</b><br>Tidak. Kamu cuma salin, tempel, dan ngobrol.</p>
+  <p><b>Berapa lama bikin 1 video?</b><br>Kira-kira 15–30 menit. Claude yang bekerja, kamu tinggal menunggu.</p>
+  </div><div><p><b>Ada biaya lagi per video?</b><br>Tidak ada biaya tambahan. Studio ini memakai jatah langganan Claude-mu. Suara, musik, dan font gratis.</p>
+  <p><b>Videonya boleh dimonetisasi?</b><br>Boleh. Video buatanmu milikmu. Ikuti aturan Instagram (termasuk label AI).</p>
+  <p><b>Musiknya aman dari copyright?</b><br>Aman. Musik dan efek suara dibuat sendiri oleh studio, bukan diambil dari lagu orang.</p>
+  <p><b>Bisa dari HP saja?</b><br>Persiapan pertama (Bagian 1) sebaiknya pakai laptop. Setelah itu bisa dari aplikasi Claude di HP → <b>Code</b>.</p></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>Kamus kecil 📚</h2>
+  <table>
+    <tr><td><b>Claude</b></td><td>Asisten AI buatan Anthropic. Kamu memakainya di <span class="web">claude.ai</span>.</td></tr>
+    <tr><td><b>claude.ai/code</b></td><td>Bagian Claude yang bisa "bekerja di komputer online". Disebut juga Claude Code.</td></tr>
+    <tr><td><b>GitHub</b></td><td>Lemari online gratis untuk menyimpan proyek.</td></tr>
+    <tr><td><b>Repository</b></td><td>Satu laci di lemari GitHub. Punyamu bernama <span class="file">studio-animasi</span>.</td></tr>
+    <tr><td><b>Commit</b></td><td>Bahasa GitHub untuk "simpan".</td></tr>
+    <tr><td><b>Environment</b></td><td>Pengaturan komputer online Claude. Kamu cukup mengatur Network access = Full sekali saja.</td></tr>
+    <tr><td><b>Prompt</b></td><td>Pesan yang kamu kirim ke Claude.</td></tr>
+    <tr><td><b>Day</b></td><td>Satu episode / satu video harian.</td></tr>
+  </table>
+
+  <h3>✅ Daftar centang (biar tidak ada yang terlewat)</h3>
+  <ul class="check">
+    <li>Kardus (ZIP) sudah dibuka</li>
+    <li>Akun GitHub sudah jadi</li>
+    <li>Laci <span class="file">studio-animasi</span> sudah dibuat (Private)</li>
+    <li>Semua file sudah di-upload dan di-<i>Commit</i></li>
+    <li>Claude sudah terhubung dengan GitHub</li>
+    <li>Network access sudah <b>Full</b></li>
+    <li>Pesan <span class="file">1_MULAI.txt</span> sudah dikirim, dan video tes sudah keluar</li>
+    <li>Day 1 sudah jadi dan diposting 🎉</li>
+  </ul>
+
+  <div class="box"><span class="lbl">📜 Hal penting</span>
+  <span class="small">Lisensi: kamu boleh memakai studio ini untuk membuat video sebanyak-banyaknya, untuk akun pribadi maupun komersial. Mohon <b>jangan membagikan atau menjual ulang</b> paket ini.
+  Suara narator memakai layanan text-to-speech online gratis dari Microsoft (lewat alat open-source edge-tts), jadi butuh internet dan tergantung ketersediaan layanan tersebut.
+  Musik dan efek suara dibuat oleh studio sendiri. Font Nunito dan Fredoka berlisensi SIL Open Font License.
+  Claude dan Claude Code adalah merek dagang Anthropic. GitHub adalah merek dagang GitHub, Inc. Produk ini adalah produk independen dan tidak berafiliasi dengan mereka.</span></div>
+
+  <div class="box ok" style="text-align:center"><span class="lbl" style="font-size:15pt">3 langkah berikutnya</span>
+  1) Kerjakan Bagian 1 sekali. &nbsp; 2) Kirim pesan <b>1_MULAI</b>. &nbsp; 3) Ceritakan kerajaanmu, lalu posting Day 1. Semangat! 👑</div>
+</section>
+
+</body>
+</html>

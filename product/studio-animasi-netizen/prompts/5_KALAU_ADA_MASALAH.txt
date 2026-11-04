@@ -1,0 +1,22 @@
+(Kalau ada yang aneh, salin salah satu pesan di bawah ini ke Claude.)
+------------------------------------------------------------
+Claude berhenti di tengah jalan:
+    Lanjutkan dari yang tadi ya.
+
+Claude bilang suara/jaringan tidak bisa:
+    Aku sudah ubah Network access jadi Full. Coba lagi.
+
+Claude tanya hal teknis yang aku tidak paham:
+    Aku tidak paham teknis, tolong kamu yang putuskan.
+
+Claude bilang ada yang "diblokir" atau "ditolak":
+    Aku izinkan. Silakan lanjut.
+
+Videonya tidak ketemu:
+    Kirim ulang video terakhir ke aku, beserta cover dan caption-nya.
+
+Videonya ada yang salah:
+    Di detik ke-[15] ada yang salah: [jelaskan apa yang kamu lihat]. Tolong perbaiki dan buat ulang videonya.
+
+Semua file ada di dalam satu folder di GitHub:
+    Pindahkan semua file proyek ke paling atas (bukan di dalam folder).

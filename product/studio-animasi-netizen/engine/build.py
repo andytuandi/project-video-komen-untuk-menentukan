@@ -1,0 +1,309 @@
+#!/usr/bin/env python3
+"""Episode JSON → finished vertical reel (1080x1920 MP4) for Kerajaan Netizen.
+
+    python3 engine/build.py episodes/day01.json --stills 2,9,16      # preview PNGs only
+    python3 engine/build.py episodes/day01.json --workers 4          # full render
+
+Steps: TTS per beat (cached) → timeline.json → procedural audio mix →
+Three.js render in headless Chromium (Playwright) → mux + loudness normalisation (-14 LUFS).
+"""
+import argparse
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import audio  # noqa: E402
+from tts import synth_line  # noqa: E402
+
+
+def load_episode(path):
+    ep = json.loads(Path(path).read_text())
+    slug = re.sub(r"[^a-z0-9]+", "-", ep["series"].lower()).strip("-")
+    ep["_slug"] = f"{slug}-day{ep['day']:02d}"
+    return ep
+
+
+def chunk_words(words, max_words=5, max_chars=28):
+    chunks, cur = [], []
+    for w in words:
+        cur.append(w)
+        text = " ".join(x["w"] for x in cur)
+        if len(cur) >= max_words or len(text) >= max_chars or re.search(r"[.,!?…:]$", w["w"]):
+            chunks.append(cur)
+            cur = []
+    if cur:
+        chunks.append(cur)
+    if len(chunks) > 1 and len(chunks[-1]) == 1 and len(chunks[-2]) < max_words \
+            and not re.search(r"[.,!?:]$", chunks[-2][-1]["w"]):
+        chunks[-2] += chunks.pop()
+    return chunks
+
+
+def to_min(s):
+    h, m = s.split(":")
+    return int(h) * 60 + int(m)
+
+
+VOICE_FX = {
+    # deeper, larger-sounding voice (pitch + formants down, duration unchanged) with a little throne-hall echo
+    "royal": ("asetrate=48000*0.88,aresample=48000,atempo=1.13636,"
+              "bass=g=5:f=120,equalizer=f=2800:t=q:w=1.2:g=2.5,"
+              "aecho=0.85:0.5:38|72:0.14|0.08,alimiter=limit=0.95"),
+}
+
+
+def apply_fx(wav, fx):
+    """Process a cached TTS wav with a named voice effect (cached next to it)."""
+    if not fx:
+        return wav
+    out = Path(str(wav).replace(".wav", f".{fx}.wav"))
+    if not out.exists():
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af", VOICE_FX[fx],
+                        "-ac", "1", "-ar", "48000", str(out)], check=True)
+    return out
+
+
+def build_timeline(ep, cache_dir):
+    voices = ep["voices"]
+    gap = ep.get("gap", 0.35)
+    t = 0.0
+    beats, shots, captions, clock, popups, sfx, fades, music = [], [], [], [], [], [], [], []
+    clips = []
+    end_card = None
+    for i, b in enumerate(ep["beats"]):
+        v = voices[b.get("speaker", "raja")]
+        start = t
+        speech_start = start + b.get("pre", 0.0)
+        words, dur = [], b.get("dur", 0.0)
+        if b.get("say"):
+            wav, dur, words = synth_line(b["say"], v["voice"], v.get("rate", "+0%"), v.get("pitch", "+0Hz"), cache_dir)
+            clips.append({"path": str(apply_fx(wav, v.get("fx"))), "t": speech_start})
+            for w in words:
+                w["s"] = round(w["s"] + speech_start, 3)
+                w["e"] = round(w["e"] + speech_start, 3)
+        end = speech_start + dur + gap + b.get("pause", 0.0)
+        span = end - start
+        beats.append({"i": i, "start": round(start, 3), "end": round(end, 3), "words": words})
+
+        # camera / actors
+        if b.get("shot") or not shots:
+            sh = dict(b.get("shot", {}))
+            shots.append({"start": round(start, 3), "end": round(end, 3), "cam": sh.get("cam"),
+                          "actors": sh.get("actors", []), "beats": [i]})
+            if b.get("transition") == "fade":
+                fades.append({"t": round(start, 3), "len": 0.35})
+            elif b.get("transition") == "white":
+                fades.append({"t": round(start, 3), "len": 0.3, "color": "255,255,255"})
+            elif i > 0 and b.get("transition") != "none":
+                sfx.append({"name": "whoosh", "t": max(0, start - 0.2), "gain": 0.6})
+        else:
+            shots[-1]["end"] = round(end, 3)
+            shots[-1]["beats"].append(i)
+
+        # clock: "HH:MM" static (real time) or ["HH:MM","HH:MM"] time-lapse across the beat
+        c = b.get("clock")
+        if isinstance(c, list):
+            clock.append({"t0": round(start, 3), "t1": round(end, 3), "m0": to_min(c[0]), "m1": to_min(c[1]),
+                          "label": b.get("clockLabel", "x24 TIME-LAPSE")})
+        elif isinstance(c, str):
+            clock.append({"t0": round(start, 3), "t1": round(start, 3), "m0": to_min(c), "m1": to_min(c),
+                          "label": b.get("clockLabel", "REAL TIME")})
+
+        pops = b.get("popup", [])
+        for p in (pops if isinstance(pops, list) else [pops]):
+            pt = start + p.get("at", 0.1) * span
+            if p.get("word"):
+                for w in words:
+                    if re.sub(r"\W", "", w["w"].lower()) == p["word"].lower():
+                        pt = w["s"] - 0.05
+                        break
+            popups.append({"t": round(pt, 3), "dur": p.get("dur", 2.2), "text": p["text"], "icon": p.get("icon"),
+                           "color": p.get("color"), "y": p.get("y")})
+            sfx.append({"name": "pop", "t": pt})
+
+        for s in b.get("sfx", []):
+            name, at = (s[0], s[1]) if isinstance(s, list) else (s["name"], s.get("at", 0))
+            gain = s[2] if isinstance(s, list) and len(s) > 2 else (s.get("gain", 1) if isinstance(s, dict) else 1)
+            sfx.append({"name": name, "t": round(start + at * span, 3), "gain": gain})
+        for name in b.get("loops", []):
+            sfx.append({"name": name, "t": round(start, 3), "len": round(span, 3)})
+        if b.get("music"):
+            music.append([round(start, 3), round(end, 3), b["music"]])
+
+        if b.get("end"):
+            end_card = dict(b["end"], t=round(start + b["end"].get("at", 0.0) * span, 3))
+
+        if words and not b.get("nocap"):
+            ch = chunk_words(words)
+            for k, cw in enumerate(ch):
+                nxt = ch[k + 1][0]["s"] if k + 1 < len(ch) else min(cw[-1]["e"] + 0.5, end)
+                captions.append({"start": cw[0]["s"], "end": round(max(nxt, cw[-1]["e"]), 3),
+                                 "text": " ".join(w["w"] for w in cw), "color": b.get("capColor")})
+        t = end
+
+    def beat_t(ref, frac=0.0):
+        bb = beats[ref]
+        return round(bb["start"] + frac * (bb["end"] - bb["start"]), 3)
+
+    props = []
+    for p in ep.get("props", []):
+        q = dict(p)
+        if isinstance(p.get("show"), int):
+            q["show"] = beat_t(p["show"], p.get("showAt", 0))
+        if isinstance(p.get("hide"), int):
+            q["hide"] = beat_t(p["hide"], p.get("hideAt", 0))
+        for key in ("build", "grow", "ripe"):
+            if p.get(key):
+                bd = p[key]
+                q[key] = [beat_t(bd["beat"], bd.get("from", 0)), beat_t(bd.get("endBeat", bd["beat"]), bd.get("to", 1))]
+        if p.get("build"):
+            q.setdefault("show", q["build"][0])
+        if p.get("params", {}).get("lit"):
+            lit = p["params"]["lit"]
+            q["params"] = dict(p["params"], lit=beat_t(lit["beat"], lit.get("at", 0)))
+        props.append(q)
+
+    pop_keys = [{"t": beat_t(k["beat"], k.get("at", 0)), "v": k["v"], "ramp": k.get("ramp")} for k in ep.get("popKeys", [])]
+    tl = {
+        "fps": ep.get("fps", 30), "W": 1080, "H": 1920, "duration": round(t, 3),
+        "series": ep["series"], "day": ep["day"], "handle": ep["handle"], "ui": ep.get("ui", {}),
+        "population": ep.get("population", 1), "popKeys": pop_keys, "seed": ep.get("seed", 7),
+        "shots": shots, "beats": beats, "captions": captions, "clock": clock, "popups": popups,
+        "fades": fades, "endCard": end_card, "props": props, "cover": ep.get("cover"),
+        "sfx": sfx, "musicSections": music, "plazas": ep.get("plazas", []), "leader": ep.get("leader", {}), "reserved": ep.get("reserved", []),
+    }
+    return tl, clips
+
+
+PROP_TYPES = {"gate", "sign", "throne", "tent", "campfire", "crate", "sack", "hammer", "mosque", "church",
+              "guardpost", "paddy", "hut", "scarecrow"}
+ACTOR_TYPES = {"king", "villager", "soldier", "dragon", "cart", "buffalo", "crowd"}
+ANIMS = {"idle", "walk", "talk", "present", "wave", "raise", "point", "shrug", "hammer", "sit", "sigh", "lookup",
+         "plant", "stuck", "hop", "fly", "fire", "peek", "look", "sleep"}
+SFX = set(audio.ONESHOT) | set(audio.LOOPS)
+
+
+def check_episode(ep):
+    """Return a list of human-readable problems in an episode file (empty = OK)."""
+    bad = []
+    for k in ("series", "day", "handle", "voices", "beats"):
+        if k not in ep:
+            bad.append(f"kolom '{k}' tidak ada")
+    ids = set()
+    for p in ep.get("props", []):
+        if p.get("type") not in PROP_TYPES:
+            bad.append(f"prop '{p.get('id')}': type '{p.get('type')}' tidak dikenal (pilih: {sorted(PROP_TYPES)})")
+        if not isinstance(p.get("at"), list) or len(p["at"]) != 2:
+            bad.append(f"prop '{p.get('id')}': 'at' harus [x, z]")
+        ids.add(p.get("id"))
+    n = len(ep.get("beats", []))
+    for i, b in enumerate(ep.get("beats", [])):
+        if b.get("speaker", "raja") not in ep.get("voices", {}):
+            bad.append(f"beat {i}: speaker '{b.get('speaker', 'raja')}' tidak ada di 'voices'")
+        if i == 0 and not b.get("shot"):
+            bad.append("beat 0 harus punya 'shot'")
+        sh = b.get("shot")
+        if sh:
+            cam = sh.get("cam") or {}
+            if "from" not in cam or "pos" not in cam["from"] or "look" not in cam["from"]:
+                bad.append(f"beat {i}: shot.cam.from butuh 'pos' dan 'look'")
+            for a in sh.get("actors", []):
+                if a.get("type") not in ACTOR_TYPES:
+                    bad.append(f"beat {i}: actor '{a.get('id')}' type '{a.get('type')}' tidak dikenal")
+                for an in [a.get("anim")] + [x[1] for x in a.get("anims", [])]:
+                    if an and an not in ANIMS:
+                        bad.append(f"beat {i}: anim '{an}' tidak dikenal (pilih: {sorted(ANIMS)})")
+                if a.get("type") != "crowd" and "at" not in a and "path" not in a:
+                    bad.append(f"beat {i}: actor '{a.get('id')}' butuh 'at' atau 'path'")
+        for s in b.get("sfx", []):
+            name = s[0] if isinstance(s, list) else s.get("name")
+            if name not in SFX:
+                bad.append(f"beat {i}: sfx '{name}' tidak dikenal (pilih: {sorted(SFX)})")
+        for name in b.get("loops", []):
+            if name not in audio.LOOPS:
+                bad.append(f"beat {i}: loop '{name}' tidak dikenal (pilih: {sorted(audio.LOOPS)})")
+    for p in ep.get("props", []):
+        for key in ("build", "grow", "ripe"):
+            if p.get(key) and not (0 <= p[key].get("beat", -1) < n):
+                bad.append(f"prop '{p.get('id')}': {key}.beat di luar jumlah beat (0..{n - 1})")
+    return bad
+
+
+def run(cmd):
+    print("+", " ".join(str(c) for c in cmd[:6]), "…" if len(cmd) > 6 else "", flush=True)
+    subprocess.run([str(c) for c in cmd], check=True)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("episode")
+    ap.add_argument("--out", default=str(ROOT / "videos"))
+    ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--fps", type=int, default=None)
+    ap.add_argument("--stills", default=None, help="comma list of seconds: render PNG previews only")
+    ap.add_argument("--check", action="store_true", help="validate the episode file only")
+    ap.add_argument("--start", type=float, default=0.0)
+    ap.add_argument("--end", type=float, default=None)
+    a = ap.parse_args()
+
+    ep = load_episode(a.episode)
+    problems = check_episode(ep)
+    if problems:
+        print("Masalah di file episode:")
+        for p in problems:
+            print("  - " + p)
+        sys.exit(2)
+    if a.check:
+        print("Episode OK")
+        return
+    work = ROOT / "build" / ep["_slug"]
+    work.mkdir(parents=True, exist_ok=True)
+    tl, clips = build_timeline(ep, ROOT / "build" / "tts_cache")
+    if a.fps:
+        tl["fps"] = a.fps
+    tl_path = work / "timeline.json"
+    tl_path.write_text(json.dumps(tl, indent=1))
+    print(f"timeline: {tl['duration']:.1f}s, {len(tl['shots'])} shots, {len(tl['captions'])} captions")
+    for b in tl["beats"]:
+        print(f"  beat {b['i']:2d} {b['start']:6.2f}-{b['end']:6.2f}")
+
+    render_js = ROOT / "engine" / "render.js"
+    if a.stills:
+        run(["node", render_js, "--timeline", tl_path, "--stills", a.stills, "--outdir", work / "stills"])
+        return
+
+    mix = work / "mix.wav"
+    audio.render_mix(tl, clips, mix)
+    silent = work / "video.mp4"
+    cmd = ["node", render_js, "--timeline", tl_path, "--out", silent, "--workers", a.workers, "--start", a.start]
+    if a.end is not None:
+        cmd += ["--end", a.end]
+    run(cmd)
+
+    out_dir = Path(a.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    final = out_dir / f"{ep['_slug']}.mp4"
+    # two-pass loudnorm so the final file really lands on -14 LUFS
+    probe = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(mix), "-af",
+                            "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                           capture_output=True, text=True).stderr
+    m = json.loads(probe[probe.rindex("{"):probe.rindex("}") + 1])
+    ln = ("loudnorm=I=-14:TP=-1.5:LRA=11:linear=true:"
+          f"measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
+          f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}")
+    run(["ffmpeg", "-y", "-loglevel", "error", "-i", silent, "-ss", a.start, "-i", mix,
+         "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+         "-af", ln, "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+         "-shortest", "-movflags", "+faststart", final])
+    if tl.get("cover"):
+        run(["node", render_js, "--timeline", tl_path, "--cover", out_dir / f"{ep['_slug']}-cover.jpg"])
+    print("done:", final)
+
+
+if __name__ == "__main__":
+    main()

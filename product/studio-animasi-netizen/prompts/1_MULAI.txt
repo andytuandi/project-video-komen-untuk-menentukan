@@ -1,0 +1,6 @@
+(Salin SEMUA tulisan di bawah garis ini, lalu tempel sebagai pesan PERTAMA ke Claude.)
+------------------------------------------------------------
+Halo Claude! Ini proyek Studio Animasi Netizen milikku. Tolong ikuti petunjuk di file CLAUDE.md:
+cek semuanya berjalan dan buatkan video tes yang pendek, lalu bantu aku membuat dunia animasiku yang pertama.
+Aku tidak mengerti teknis, jadi tolong kerjakan semua langkah teknis untukku dan balas dengan kalimat yang singkat dan mudah.
+Kamu boleh menyimpan semuanya langsung ke branch main di proyek GitHub-ku.

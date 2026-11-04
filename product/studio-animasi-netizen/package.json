@@ -1,0 +1,6 @@
+{
+  "name": "studio-animasi-netizen",
+  "private": true,
+  "description": "Studio Animasi Netizen: 3D low-poly interactive reels engine",
+  "dependencies": { "three": "0.170.0" }
+}

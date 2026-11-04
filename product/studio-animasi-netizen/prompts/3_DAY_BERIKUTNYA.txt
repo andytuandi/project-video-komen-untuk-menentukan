@@ -1,0 +1,15 @@
+(Pakai ini setiap hari, setelah video kemarin sudah dapat komentar.
+ 1. Lihat jumlah follower di profil Instagram-mu.
+ 2. Screenshot 3 sampai 5 komentar dengan like terbanyak.
+ 3. Kirim pesan di bawah ini ke Claude, lalu tempel/upload screenshot komentarnya.)
+------------------------------------------------------------
+Buatkan Day berikutnya untuk dunia [Kerajaan Rebahan].
+Jumlah follower sekarang: [581]
+Ini komentar teratasnya (screenshot terlampir). Bangun usulan dengan like terbanyak, dan sebutkan nama pengusulnya di video.
+Kamu boleh menyimpan semuanya langsung ke branch main.
+
+------------------------------------------------------------
+TIDAK BISA SCREENSHOT? Ketik komentarnya seperti ini:
+------------------------------------------------------------
+budi_santoso | bangun pasar dong | 25 like
+siti.aminah | bikin sekolah | 12 like

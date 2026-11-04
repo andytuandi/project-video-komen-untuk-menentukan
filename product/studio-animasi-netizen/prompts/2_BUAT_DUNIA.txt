@@ -1,0 +1,15 @@
+(Pakai ini setelah video tes berhasil. Ganti tulisan di dalam [kurung] dengan punyamu, lalu kirim ke Claude.)
+------------------------------------------------------------
+Buatkan dunia animasi baru dan langsung buat video Day 1.
+Nama kerajaan: [Kerajaan Rebahan]
+Akun Instagram-ku: [@kerajaanrebahan]
+Pemimpinnya: [Raja / Ratu]
+Nama hewan peliharaannya: [Gosong]
+Bahasa video: Indonesia.
+Kamu boleh menyimpan semuanya langsung ke branch main.
+
+------------------------------------------------------------
+BELUM PUNYA IDE? Kirim saja ini:
+------------------------------------------------------------
+Buatkan dunia animasi baru, kamu yang pilihkan nama kerajaan, pemimpin, dan hewannya. Akun Instagram-ku: [@akunmu].
+Lalu langsung buat video Day 1. Kamu boleh menyimpan semuanya langsung ke branch main.

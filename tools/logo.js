@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 // Kerajaan Netizen logo: renders the King + Kompor with the episode engine, then composes a
 // crowned round badge with a ribbon. Outputs assets/logo/logo.png (transparent) and profile.png.
-//   node tools/logo.js
+//   node tools/logo.js [--title "KERAJAAN NETIZEN"] [--out assets/logo] [--leader '{"mustache":false,"hair":"bun"}']
 const { chromium } = require("playwright");
+const args = {};
+for (let i = 2; i < process.argv.length; i += 2) args[process.argv[i].replace(/^--/, "")] = process.argv[i + 1];
+const TITLE = (args.title || "KERAJAAN NETIZEN").toUpperCase();
 const http = require("http"), fs = require("fs"), path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".ttf": "font/ttf" };
 
 const tl = {
   fps: 30, W: 1080, H: 1920, duration: 5, series: "Kerajaan Netizen", day: 0, handle: "@kerajaannetizen.idn", ui: {},
-  population: 1, popKeys: [], seed: 7, captions: [], popups: [], fades: [], sfx: [], musicSections: [],
+  population: 1, popKeys: [], seed: 7, leader: args.leader ? JSON.parse(args.leader) : {}, captions: [], popups: [], fades: [], sfx: [], musicSections: [],
   clock: [{ t0: 0, t1: 0, m0: 10 * 60, m1: 10 * 60, label: "" }], plazas: [], reserved: [],
   props: [],
   beats: [{ i: 0, start: 0, end: 5, words: [] }],
@@ -38,7 +41,7 @@ const serve = () => new Promise(r => {
   await page.goto(`http://127.0.0.1:${server.address().port}/engine/renderer/index.html`);
   await page.waitForFunction(() => window.ready === true);
   await page.evaluate(t => window.setup(t), tl);
-  const out = await page.evaluate(async () => {
+  const out = await page.evaluate(async (TITLE) => {
     const raw = new Image(); raw.src = window.renderRaw(0.6); await raw.decode();
     const S = 2048, c = document.createElement("canvas"); c.width = c.height = S;
     const g = c.getContext("2d");
@@ -82,8 +85,11 @@ const serve = () => new Promise(r => {
     const rg = g.createLinearGradient(0, ry - rh, 0, ry + rh); rg.addColorStop(0, "#e74c3c"); rg.addColorStop(1, "#b0212b");
     g.fillStyle = rg; g.fill(); g.lineWidth = 30; g.strokeStyle = "#3b2410"; g.stroke();
     // text following the ribbon curve
-    const txt = "KERAJAAN NETIZEN";
-    g.font = "700 140px Fredoka"; g.textAlign = "center"; g.textBaseline = "middle";
+    const txt = TITLE;
+    let fs = 140;
+    g.font = `700 ${fs}px Fredoka`;
+    while (g.measureText(txt).width * 1.04 > rw * 0.9 && fs > 60) { fs -= 4; g.font = `700 ${fs}px Fredoka`; }
+    g.textAlign = "center"; g.textBaseline = "middle";
     const total = g.measureText(txt).width * 1.04;
     let x = cx - total / 2;
     for (const ch of txt) {
@@ -103,8 +109,8 @@ const serve = () => new Promise(r => {
     const lim = new Image(); lim.src = logo; await lim.decode();
     const k = 0.86; pg.drawImage(lim, 540 - 540 * k, 540 - 540 * k - 10, 1080 * k, 1080 * k);
     return { logo, profile: p.toDataURL("image/png") };
-  });
-  const dir = path.join(ROOT, "assets", "logo");
+  }, TITLE);
+  const dir = path.resolve(ROOT, args.out || path.join("assets", "logo"));
   fs.mkdirSync(dir, { recursive: true });
   for (const [k, v] of Object.entries(out)) {
     const f = path.join(dir, `${k}.png`); fs.writeFileSync(f, Buffer.from(v.split(",")[1], "base64")); console.log(f);
