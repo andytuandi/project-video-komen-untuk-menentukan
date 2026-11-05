@@ -76,12 +76,14 @@ function badges(g, tl, clock) {
 }
 
 function watermark(g, tl) {
+  if (!tl.handle) return;
   g.font = "800 30px Nunito"; g.textAlign = "right"; g.textBaseline = "middle";
   g.fillStyle = "rgba(255,255,255,0.62)"; g.shadowColor = "rgba(0,0,0,0.35)"; g.shadowBlur = 6;
   g.fillText(tl.handle, W - 44, 102); g.shadowColor = "transparent";
 }
 
 function socials(g, tl) {
+  if (!tl.handle) return;
   // Instagram-only footer: icon + handle, centred
   const y = 1610;
   g.globalAlpha = 0.92;

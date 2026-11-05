@@ -1,0 +1,177 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  @font-face { font-family: "Nunito"; src: url("/assets/fonts/Nunito.ttf"); font-weight: 200 1000; }
+  @font-face { font-family: "Fredoka"; src: url("/assets/fonts/Fredoka.ttf"); font-weight: 300 700; }
+  html, body { margin: 0; background: #000; } canvas { display: block; }
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920, c = document.getElementById("c"), g = c.getContext("2d");
+let TL = null; const imgCache = new Map(); const statics = {};
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const easeOutBack = k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+
+function load(src) {
+  if (imgCache.has(src)) return imgCache.get(src);
+  const im = new Image(); im.src = src; const p = im.decode().then(() => im).catch(() => null);
+  imgCache.set(src, p); if (imgCache.size > 40) imgCache.delete(imgCache.keys().next().value);
+  return p;
+}
+function rr(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function text(t, x, y, o = {}) {
+  g.save(); g.font = o.font || "900 66px Nunito"; g.textAlign = o.align || "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  if (o.stroke !== 0) { g.shadowColor = "rgba(0,0,0,.45)"; g.shadowBlur = 12; g.shadowOffsetY = 5; g.lineWidth = o.stroke || 14; g.strokeStyle = o.strokeColor || "#141414"; g.strokeText(t, x, y); }
+  g.shadowColor = "transparent"; g.fillStyle = o.color || "#fff"; g.fillText(t, x, y); g.restore();
+}
+function popScale(u, at, len = 0.3) { return easeOutBack(clamp((u - at) / len)); }
+function wordTime(seg, w, fallback) {
+  const hit = seg.words.find(x => x.w.toLowerCase().replace(/[^a-z]/g, "").startsWith(w)); return hit ? hit.s - seg.start : fallback;
+}
+
+async function clipFrame(seg, t) {
+  const idx = clamp(Math.floor((t - seg.start) * TL.fps) + 1, 1, 99999);
+  const src = `/${seg.frames}/${String(idx).padStart(5, "0")}.jpg`;
+  return (await load(src)) || (await load(`/${seg.frames}/00001.jpg`));
+}
+function bg(im, filter) { g.save(); if (filter) g.filter = filter; g.drawImage(im, -20, -20, W + 40, H + 40); g.restore(); }
+function grad() { const gr = g.createRadialGradient(540, 600, 80, 540, 900, 1300); gr.addColorStop(0, "#4a37a0"); gr.addColorStop(.5, "#22195a"); gr.addColorStop(1, "#0e0b24"); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
+
+// ------------------------------------------------------------- segments
+function drawHook(seg, u) {
+  const s0 = popScale(u, 0.05, 0.35);
+  g.save(); g.translate(540, 300); g.scale(s0, s0); text("AKUN INI", 0, 0, { font: "700 120px Fredoka", color: "#ffd23f", stroke: 18 }); g.restore();
+  // anonymous profile card
+  const k = popScale(u, 0.35, 0.4); if (k <= 0) return;
+  g.save(); g.translate(540, 720); g.scale(k, k);
+  g.shadowColor = "rgba(0,0,0,.5)"; g.shadowBlur = 40; g.fillStyle = "#16151f"; rr(-430, -230, 860, 460, 40); g.fill(); g.shadowColor = "transparent";
+  const av = g.createLinearGradient(-330, -130, -170, 30); av.addColorStop(0, "#feda75"); av.addColorStop(.5, "#d62976"); av.addColorStop(1, "#4f5bd5");
+  g.beginPath(); g.arc(-260, -60, 112, 0, 7); g.fillStyle = av; g.fill();
+  g.beginPath(); g.arc(-260, -60, 98, 0, 7); g.fillStyle = "#6b6a7a"; g.fill();
+  g.save(); g.filter = "blur(6px)"; g.fillStyle = "#9a99ad"; g.beginPath(); g.arc(-260, -80, 40, 0, 7); g.fill(); g.beginPath(); g.ellipse(-260, 0, 64, 40, 0, Math.PI, 0); g.fill(); g.restore();
+  g.save(); g.filter = "blur(7px)"; g.fillStyle = "#5c5b6e"; rr(-120, -150, 330, 44, 20); g.fill(); rr(-120, 140, 420, 28, 14); g.fill(); g.restore();
+  const cnt = Math.round(15000 * easeOut(clamp((u - 0.9) / 2.1)));
+  const stats = [["1", "postingan"], [cnt.toLocaleString("id-ID"), "pengikut"], ["2", "mengikuti"]];
+  stats.forEach(([a, b], i) => { const x = -60 + i * 175;
+    text(a, x, -20, { font: `900 ${i === 1 ? 64 : 52}px Nunito`, color: i === 1 ? "#ffd23f" : "#fff", stroke: 0 });
+    text(b, x, 36, { font: "700 28px Nunito", color: "#c9c8d6", stroke: 0 }); });
+  g.restore();
+  const k2 = popScale(u, 1.2, 0.35);
+  if (k2 > 0) { g.save(); g.translate(540, 1150); g.scale(k2, k2); text("+15.000 FOLLOWER", 0, 0, { font: "700 104px Fredoka", stroke: 16 });
+    text("DALAM 1 HARI", 0, 115, { font: "700 92px Fredoka", color: "#ffd23f", stroke: 16 }); g.restore(); }
+  const tp = wordTime(seg, "padahal", 3.2), k3 = popScale(u, tp - 0.05, 0.3);
+  if (k3 > 0) { g.save(); g.translate(540, 1470); g.scale(k3, k3);
+    g.fillStyle = "#e63946"; rr(-430, -70, 860, 140, 70); g.fill();
+    text("padahal cuma post 1 konten 🤯", 0, 4, { font: "900 54px Nunito", stroke: 0 }); g.restore(); }
+}
+
+function bubble(txt, me, y, k) {
+  if (k <= 0) return;
+  g.save(); g.font = "800 44px Nunito";
+  const lines = wrap(txt, 700), w = Math.min(780, Math.max(...lines.map(l => g.measureText(l).width)) + 70), h = 34 + lines.length * 56;
+  const x = me ? W - 70 - w : 70;
+  g.translate(x + (me ? w : 0), y); g.scale(k, k); g.translate(-(me ? w : 0), 0);
+  g.shadowColor = "rgba(0,0,0,.4)"; g.shadowBlur = 24; g.fillStyle = me ? "#e9e4ff" : "#ffffff"; rr(0, 0, w, h, 34); g.fill(); g.shadowColor = "transparent";
+  g.fillStyle = "#1d1b3a"; g.textAlign = "left"; g.textBaseline = "top";
+  lines.forEach((l, i) => g.fillText(l, 35, 22 + i * 56)); g.restore();
+}
+function wrap(t, maxW) { const ws = t.split(" "), out = []; let cur = ""; for (const w of ws) { const s = cur ? cur + " " + w : w; if (g.measureText(s).width > maxW && cur) { out.push(cur); cur = w; } else cur = s; } if (cur) out.push(cur); return out; }
+
+function drawChat(seg, u) {
+  g.fillStyle = "rgba(10,8,30,.45)"; g.fillRect(0, 0, W, H);
+  text("🤖 ngobrol sama AI", 540, 420, { font: "700 64px Fredoka", color: "#ffd23f", stroke: 12 });
+  bubble("Bikinin Day 2: rakyat minta masjid & gereja 🙏", true, 520, popScale(u, 0.3));
+  bubble("Siap! Lagi aku bikin videonya… 🎬", false, 720, popScale(u, 1.6));
+  bubble("✅ Day 2 jadi! Ini video, cover & caption-nya.", false, 860, popScale(u, 3.0));
+}
+function drawCheck(seg, u) {
+  const items = [["coding", "✅ Tanpa coding", 0.2], ["edit", "✅ Tanpa edit video", 1.3], ["suara", "✅ Suara + teks + musik otomatis", 2.4]];
+  items.forEach(([w, t, fb], i) => {
+    const k = popScale(u, wordTime(seg, w, fb) - 0.1); if (k <= 0) return;
+    g.save(); g.translate(540, 430 + i * 150); g.scale(k, k); g.font = "900 54px Nunito";
+    const tw = g.measureText(t).width + 90; g.shadowColor = "rgba(0,0,0,.4)"; g.shadowBlur = 20;
+    g.fillStyle = "rgba(255,255,255,.95)"; rr(-tw / 2, -58, tw, 116, 58); g.fill(); g.shadowColor = "transparent";
+    g.fillStyle = "#1d1b3a"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(t, 0, 4); g.restore();
+  });
+}
+async function drawProduct(seg, u) {
+  grad();
+  const k = popScale(u, 0.05, 0.45);
+  text("STUDIO + PANDUAN", 540, 200, { font: "700 96px Fredoka", color: "#ffd23f", stroke: 16 });
+  const p1 = statics.pdf4, p2 = statics.pdf7, th = statics.thumb;
+  const kp = popScale(u, 0.9, 0.45);
+  if (kp > 0) for (const [im, x, rot] of [[p1, 230, -0.12], [p2, 850, 0.12]]) {
+    g.save(); g.translate(x, 1240); g.rotate(rot); g.scale(kp, kp); const w = 380, h = w * im.height / im.width;
+    g.shadowColor = "rgba(0,0,0,.55)"; g.shadowBlur = 40; g.fillStyle = "#fff"; g.fillRect(-w / 2 - 8, -h / 2 - 8, w + 16, h + 16); g.shadowColor = "transparent";
+    g.drawImage(im, -w / 2, -h / 2, w, h); g.restore(); }
+  g.save(); g.translate(540, 760); g.scale(k, k); const s = 760;
+  g.shadowColor = "rgba(0,0,0,.6)"; g.shadowBlur = 50; rr(-s / 2, -s / 2, s, s, 36); g.fillStyle = "#000"; g.fill(); g.shadowColor = "transparent";
+  g.save(); rr(-s / 2, -s / 2, s, s, 36); g.clip(); g.drawImage(th, -s / 2, -s / 2, s, s); g.restore(); g.restore();
+  const kz = popScale(u, 1.6, 0.4);
+  if (kz > 0) { g.save(); g.translate(540, 1560); g.scale(kz, kz); g.fillStyle = "#2a9d8f"; rr(-400, -60, 800, 120, 60); g.fill();
+    text("📦 ZIP + 📖 PDF super gampang", 0, 4, { font: "900 48px Nunito", stroke: 0 }); g.restore(); }
+}
+function drawCta(seg, u) {
+  g.fillStyle = "rgba(10,8,30,.55)"; g.fillRect(0, 0, W, H);
+  const k0 = popScale(u, 0.05, 0.35);
+  g.save(); g.translate(540, 470); g.scale(k0, k0); text("KOMEN", 0, 0, { font: "700 190px Fredoka", stroke: 22 }); g.restore();
+  // comment box typing SIAP
+  const kb = popScale(u, 0.3, 0.3);
+  if (kb > 0) {
+    g.save(); g.translate(540, 800); g.scale(kb, kb);
+    g.shadowColor = "rgba(0,0,0,.5)"; g.shadowBlur = 30; g.fillStyle = "#fff"; rr(-460, -85, 920, 170, 85); g.fill(); g.shadowColor = "transparent";
+    g.beginPath(); g.arc(-375, 0, 52, 0, 7); const av = g.createLinearGradient(-420, -50, -330, 50); av.addColorStop(0, "#ffd23f"); av.addColorStop(1, "#e76f51"); g.fillStyle = av; g.fill();
+    const typed = "SIAP".slice(0, Math.floor(clamp((u - 0.6) / 0.72) * 4 + 0.001));
+    g.font = "900 78px Nunito"; g.textAlign = "left"; g.textBaseline = "middle"; g.fillStyle = typed ? "#1d1b3a" : "#9a99ad";
+    g.fillText(typed || "Komen…", -290, 6);
+    if (typed.length < 4 && Math.floor(u * 3) % 2 === 0) { const tw = g.measureText(typed).width; g.fillStyle = "#1d1b3a"; g.fillRect(-286 + tw, -38, 6, 80); }
+    g.beginPath(); g.arc(380, 0, 52, 0, 7); g.fillStyle = typed.length === 4 ? "#3a7bd5" : "#c9c8d6"; g.fill();
+    g.fillStyle = "#fff"; g.beginPath(); g.moveTo(362, -26); g.lineTo(404, 0); g.lineTo(362, 26); g.closePath(); g.fill();
+    g.restore();
+  }
+  const ks = popScale(u, 1.5, 0.35);
+  if (ks > 0) { g.save(); g.translate(540, 1110); g.scale(ks, ks); g.rotate(-0.05);
+    g.fillStyle = "#ffd23f"; rr(-260, -105, 520, 210, 105); g.fill(); g.lineWidth = 12; g.strokeStyle = "#3b2410"; g.stroke();
+    text("SIAP", 0, 8, { font: "700 150px Fredoka", color: "#1d1b3a", stroke: 0 }); g.restore(); }
+  const kf = popScale(u, wordTime(seg, "nanti", 1.9) - 0.05, 0.35);
+  if (kf > 0) { g.save(); g.translate(540, 1360); g.scale(kf, kf); text("nanti aku kirimin filenya 📩", 0, 0, { font: "900 66px Nunito", stroke: 14 }); g.restore(); }
+  if (u > 2.4) { const y = 1560 + Math.abs(Math.sin(u * 6)) * 40; text("👇", 540, y, { font: "140px Nunito", stroke: 0 }); }
+}
+
+function captions(t) {
+  const cp = TL.captions.find(x => t >= x.start && t < x.end); if (!cp) return;
+  const seg = TL.segs.find(s => t >= s.start && t < s.end) || {};
+  const k = clamp((t - cp.start) / 0.12), s = 0.85 + 0.15 * easeOutBack(k);
+  const y = seg.type === "product" ? 1740 : 1330;
+  g.save(); g.translate(540, y); g.scale(s, s); g.font = "900 70px Nunito";
+  const lines = wrap(cp.text, 920);
+  lines.forEach((l, i) => text(l, 0, (i - (lines.length - 1) / 2) * 84, { font: "900 70px Nunito", stroke: 14 })); g.restore();
+}
+
+window.setup = async (tl) => {
+  TL = tl;
+  await Promise.all(["900 40px Nunito", "800 40px Nunito", "700 40px Fredoka"].map(f => document.fonts.load(f)));
+  for (const [k, f] of [["thumb", "thumb.jpg"], ["pdf4", "pdf4.png"], ["pdf7", "pdf7.png"]]) statics[k] = await load(`/build/promo/${f}`);
+  return true;
+};
+window.renderFrame = async (t, mime = "image/jpeg") => {
+  const seg = TL.segs.find(s => t >= s.start && t < s.end) || TL.segs[TL.segs.length - 1];
+  const u = t - seg.start;
+  g.clearRect(0, 0, W, H);
+  if (seg.frames) {
+    const im = await clipFrame(seg, t);
+    if (seg.type === "hook" || seg.type === "cta") bg(im, "blur(14px) brightness(0.55)"); else g.drawImage(im, 0, 0, W, H);
+  }
+  if (seg.type === "hook") drawHook(seg, u);
+  if (seg.type === "chat") drawChat(seg, u);
+  if (seg.type === "check") drawCheck(seg, u);
+  if (seg.type === "product") await drawProduct(seg, u);
+  if (seg.type === "cta") drawCta(seg, u);
+  // quick white flash on cuts
+  const d = u; if (seg.i > 0 && d < 0.08) { g.fillStyle = `rgba(255,255,255,${0.5 * (1 - d / 0.08)})`; g.fillRect(0, 0, W, H); }
+  captions(t);
+  return c.toDataURL(mime, 0.92);
+};
+window.ready = true;
+</script></body></html>
